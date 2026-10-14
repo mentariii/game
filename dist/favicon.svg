@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <radialGradient id="heartGrad" cx="30%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#ff9ebb" />
+      <stop offset="40%" stop-color="#ff3366" />
+      <stop offset="100%" stop-color="#990033" />
+    </radialGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+  <path d="M 50,30 C 50,15 35,5 22,5 C 9,5 0,15 0,30 C 0,55 35,75 50,92 C 65,75 100,55 100,30 C 100,15 91,5 78,5 C 65,5 50,15 50,30 Z" fill="url(#heartGrad)" filter="url(#glow)"/>
+  <circle cx="35" cy="22" r="5" fill="#ffffff" opacity="0.8"/>
+  <path d="M 75,18 L 82,12 L 80,24 L 90,20 L 75,32 Z" fill="#ffd700" />
+</svg>
