@@ -1,4 +1,4 @@
-// VFX & Juice Engine: Blade trail, shockwaves, particles, slice flashes, and screen shake
+// VFX & Juice Engine: Neon Plasma Blade, Digital Binary Particles, Cyber Shockwaves, and Hit Sparks
 
 export class VFXEngine {
   constructor() {
@@ -31,13 +31,13 @@ export class VFXEngine {
     const speed = Math.hypot(vx, vy);
     this.bladePoints.push({ x, y, time: now, vx, vy, speed });
 
-    // Emit stardust sparkles and micro hearts if moving fast
-    if (speed > 450) {
-      const count = Math.min(Math.floor(speed / 300), 4);
+    // Emit plasma sparks and digital bits when swinging fast
+    if (speed > 420) {
+      const count = Math.min(Math.floor(speed / 280), 5);
       for (let i = 0; i < count; i++) {
-        this.spawnStardust(x, y, vx * 0.1, vy * 0.1);
-        if (Math.random() < 0.25) {
-          this.spawnMicroHeart(x, y);
+        this.spawnPlasmaSpark(x, y, vx * 0.08, vy * 0.08);
+        if (Math.random() < 0.3) {
+          this.spawnBinaryBit(x, y);
         }
       }
     }
@@ -54,184 +54,177 @@ export class VFXEngine {
     this.screenShakeTime = durationMs;
   }
 
-  // Spawn stardust sparkle (Neon Cyan & Gold)
-  spawnStardust(x, y, baseVx = 0, baseVy = 0) {
+  // Spawn Plasma Sparks (Cyan, Electric Blue, White, Gold)
+  spawnPlasmaSpark(x, y, baseVx = 0, baseVy = 0) {
     const angle = Math.random() * Math.PI * 2;
-    const speed = Math.random() * 80 + 30;
-    const colors = ['#00f2fe', '#38bdf8', '#3b82f6', '#fbbf24', '#ffffff'];
+    const speed = Math.random() * 100 + 40;
+    const colors = ['#00f2fe', '#38bdf8', '#3b82f6', '#ffffff', '#fbbf24'];
     this.particles.push({
-      type: 'sparkle',
-      x: x + (Math.random() - 0.5) * 12,
-      y: y + (Math.random() - 0.5) * 12,
+      type: 'spark',
+      x: x + (Math.random() - 0.5) * 10,
+      y: y + (Math.random() - 0.5) * 10,
       vx: Math.cos(angle) * speed + baseVx,
       vy: Math.sin(angle) * speed + baseVy,
       size: Math.random() * 4 + 2,
-      maxLife: Math.random() * 0.4 + 0.3,
+      maxLife: Math.random() * 0.35 + 0.25,
       life: 0,
       color: colors[Math.floor(Math.random() * colors.length)],
       rotation: Math.random() * Math.PI,
-      vRot: (Math.random() - 0.5) * 10
+      vRot: (Math.random() - 0.5) * 12
     });
   }
 
-  // Spawn micro floating spark diamond
-  spawnMicroHeart(x, y) {
-    this.particles.push({
-      type: 'sparkle',
-      x: x + (Math.random() - 0.5) * 16,
-      y: y + (Math.random() - 0.5) * 16,
-      vx: (Math.random() - 0.5) * 60,
-      vy: -Math.random() * 80 - 40,
-      size: Math.random() * 8 + 5,
-      maxLife: Math.random() * 0.6 + 0.5,
-      life: 0,
-      color: Math.random() < 0.5 ? '#00f2fe' : '#fbbf24',
-      rotation: (Math.random() - 0.5) * 0.6,
-      vRot: (Math.random() - 0.5) * 2
-    });
+  // Spawn Radiant Plasma Spark
+  spawnBinaryBit(x, y) {
+    this.spawnPlasmaSpark(x, y);
   }
 
-  // Burst 25+ fluttering metallic gold, cyan, and electric blue confetti rectangles (Balloons)
+  // Digital Square Pixels & Shards Burst (100% Clean VFX, Zero Text)
   spawnConfettiBurst(x, y, colorTheme = 'cyan-gold') {
-    const goldPalette = ['#ffd700', '#fbbf24', '#f59e0b', '#fef08a'];
-    const cyanBluePalette = ['#00f2fe', '#38bdf8', '#3b82f6', '#2563eb', '#ffffff'];
-    const palette = colorTheme === 'gold' ? goldPalette : [...cyanBluePalette, ...goldPalette];
+    const isGoldTheme = colorTheme === 'gold';
+    const cyanPalette = ['#00f2fe', '#38bdf8', '#3b82f6', '#ffffff'];
+    const goldPalette = ['#ffd700', '#fbbf24', '#fef08a', '#ffffff'];
+    const palette = isGoldTheme ? goldPalette : [...cyanPalette, '#fbbf24'];
 
-    for (let i = 0; i < 32; i++) {
+    // 1. Digital Square Bit Particles (30 bits)
+    for (let i = 0; i < 30; i++) {
       const angle = Math.random() * Math.PI * 2;
-      const speed = Math.random() * 450 + 150;
+      const speed = Math.random() * 480 + 160;
+      const size = Math.random() * 8 + 4;
       this.particles.push({
-        type: 'confetti',
+        type: 'digital_pixel',
         x,
         y,
         vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed - 120, // Initial upward burst
-        gravity: 380,
-        drag: 0.94,
-        w: Math.random() * 10 + 6,
-        h: Math.random() * 6 + 4,
+        vy: Math.sin(angle) * speed - 100,
+        gravity: 420,
+        drag: 0.93,
+        size,
         color: palette[Math.floor(Math.random() * palette.length)],
         life: 0,
-        maxLife: Math.random() * 1.4 + 1.2,
-        rotX: Math.random() * Math.PI,
-        rotY: Math.random() * Math.PI,
-        vRotX: (Math.random() - 0.5) * 12,
-        vRotY: (Math.random() - 0.5) * 12
-      });
-    }
-  }
-
-  // Burst 30+ glowing cyan & gold star particles (Gift Boxes)
-  spawnStarBurst(x, y) {
-    const starColors = ['#00f2fe', '#38bdf8', '#fbbf24', '#ffffff', '#60a5fa', '#ffd700'];
-    for (let i = 0; i < 28; i++) {
-      const angle = Math.random() * Math.PI * 2;
-      const speed = Math.random() * 400 + 120;
-      this.particles.push({
-        type: 'star',
-        x,
-        y,
-        vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed,
-        gravity: 120,
-        drag: 0.92,
-        size: Math.random() * 8 + 5,
-        color: starColors[Math.floor(Math.random() * starColors.length)],
-        life: 0,
-        maxLife: Math.random() * 0.9 + 0.6,
-        rotation: Math.random() * Math.PI,
-        vRot: (Math.random() - 0.5) * 8
-      });
-    }
-  }
-
-  // Burst puffy dark smoke and sparks (Bomb hit)
-  spawnSmokeBurst(x, y) {
-    for (let i = 0; i < 26; i++) {
-      const angle = Math.random() * Math.PI * 2;
-      const speed = Math.random() * 200 + 40;
-      this.particles.push({
-        type: 'smoke',
-        x: x + (Math.random() - 0.5) * 20,
-        y: y + (Math.random() - 0.5) * 20,
-        vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed - 40,
-        gravity: -20, // Drifts slightly upward
-        drag: 0.91,
-        radius: Math.random() * 18 + 12,
-        maxRadius: Math.random() * 45 + 30,
-        life: 0,
-        maxLife: Math.random() * 0.7 + 0.5,
-        color: Math.random() < 0.6 ? '#2b2d42' : '#4a4e69'
+        maxLife: Math.random() * 1.1 + 0.8,
+        rot: Math.random() * Math.PI,
+        vRot: (Math.random() - 0.5) * 14
       });
     }
 
-    // Fiery spark embers
+    // 2. High-speed radiant plasma sparks (No text)
     for (let i = 0; i < 15; i++) {
       const angle = Math.random() * Math.PI * 2;
       const speed = Math.random() * 320 + 80;
       this.particles.push({
-        type: 'sparkle',
+        type: 'spark',
         x,
         y,
         vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed,
+        vy: Math.sin(angle) * speed - 60,
         size: Math.random() * 5 + 3,
-        color: '#ff5400',
+        maxLife: Math.random() * 0.9 + 0.5,
         life: 0,
-        maxLife: Math.random() * 0.5 + 0.3,
+        color: isGoldTheme ? '#ffd700' : '#00f2fe',
         rotation: 0,
         vRot: 0
       });
     }
   }
 
-  // Golden shockwave ring on slice impact
-  spawnShockwave(x, y, maxRadius = 110, color = 'rgba(255, 215, 0, 0.85)') {
+  // Star / Cyber Lattice Burst (Gold Node Decryption)
+  spawnStarBurst(x, y) {
+    const starColors = ['#00f2fe', '#fbbf24', '#ffd700', '#ffffff', '#38bdf8'];
+    for (let i = 0; i < 26; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = Math.random() * 420 + 140;
+      this.particles.push({
+        type: 'cyber_shard',
+        x,
+        y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        gravity: 140,
+        drag: 0.92,
+        size: Math.random() * 9 + 5,
+        color: starColors[Math.floor(Math.random() * starColors.length)],
+        life: 0,
+        maxLife: Math.random() * 0.85 + 0.5,
+        rotation: Math.random() * Math.PI,
+        vRot: (Math.random() - 0.5) * 10
+      });
+    }
+  }
+
+  // Red Glitch Virus Static Burst (Replaces Smoke)
+  spawnSmokeBurst(x, y) {
+    // Red Jagged Glitch Fragments
+    for (let i = 0; i < 24; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = Math.random() * 360 + 100;
+      this.particles.push({
+        type: 'glitch_fragment',
+        x: x + (Math.random() - 0.5) * 20,
+        y: y + (Math.random() - 0.5) * 20,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        sizeW: Math.random() * 16 + 6,
+        sizeH: Math.random() * 6 + 2,
+        life: 0,
+        maxLife: Math.random() * 0.5 + 0.35,
+        color: Math.random() < 0.6 ? '#ef4444' : '#b91c1c'
+      });
+    }
+
+    // Static Noise Sparks
+    for (let i = 0; i < 18; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = Math.random() * 260 + 50;
+      this.particles.push({
+        type: 'spark',
+        x,
+        y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        size: Math.random() * 5 + 2,
+        color: '#f87171',
+        life: 0,
+        maxLife: Math.random() * 0.45 + 0.25,
+        rotation: 0,
+        vRot: 0
+      });
+    }
+  }
+
+  // Expanding Cyber Shockwave Ring (Electric Cyan & Neon Gold)
+  spawnShockwave(x, y, maxRadius = 130, color = 'rgba(0, 242, 254, 0.95)') {
     this.shockwaves.push({
       x,
       y,
-      radius: 12,
+      radius: 10,
       maxRadius,
       color,
-      lineWidth: 7,
+      lineWidth: 8,
       life: 0,
-      maxLife: 0.38
+      maxLife: 0.36
     });
   }
 
-  // Bright directional slash line flash across sliced object
-  spawnSlashFlash(x, y, angle, length = 140) {
+  // Intense Directional Slash Line Flash across sliced object
+  spawnSlashFlash(x, y, angle, length = 160) {
     this.slashFlashes.push({
       x,
       y,
       angle,
       length,
       life: 0,
-      maxLife: 0.16 // 160ms flash
+      maxLife: 0.18 // 180ms flash
     });
   }
 
-  // Score popup (+100, +150, COMBO x3!)
-  spawnScorePopup(x, y, text, color = '#ffd700', isCombo = false) {
-    this.scorePopups.push({
-      x,
-      y: y - 10,
-      text,
-      color,
-      isCombo,
-      scale: 0.2,
-      targetScale: isCombo ? 1.4 : 1.1,
-      alpha: 1.0,
-      life: 0,
-      maxLife: isCombo ? 1.2 : 0.85,
-      vy: -55
-    });
+  // Data / Score Popups: Completely disabled per user request (UI kept clean of flying text)
+  spawnScorePopup(x, y, text, color = '#00f2fe', isCombo = false) {
+    // Disabled: Visual effects only on slice
   }
 
   // Update all VFX elements
   update(rawDt) {
-    // Handle hit-stop frame freeze
     if (this.hitStopFrames > 0) {
       this.hitStopFrames--;
       this.timeScale = 0.15;
@@ -261,9 +254,8 @@ export class VFXEngine {
       if (progress >= 1) {
         this.shockwaves.splice(i, 1);
       } else {
-        // Ease-out expansion
-        sw.radius = 12 + (sw.maxRadius - 12) * Math.sin((progress * Math.PI) / 2);
-        sw.lineWidth = Math.max(7 * (1 - progress), 0.5);
+        sw.radius = 10 + (sw.maxRadius - 10) * Math.sin((progress * Math.PI) / 2);
+        sw.lineWidth = Math.max(8 * (1 - progress), 0.5);
       }
     }
 
@@ -276,7 +268,7 @@ export class VFXEngine {
       }
     }
 
-    // 5. Score popups
+    // 5. Score / Data popups
     for (let i = this.scorePopups.length - 1; i >= 0; i--) {
       const sp = this.scorePopups[i];
       sp.life += dt;
@@ -284,7 +276,6 @@ export class VFXEngine {
       if (prog >= 1) {
         this.scorePopups.splice(i, 1);
       } else {
-        // Spring scale up
         if (sp.scale < sp.targetScale) {
           sp.scale += (sp.targetScale - sp.scale) * 18 * dt;
         }
@@ -304,33 +295,26 @@ export class VFXEngine {
         continue;
       }
 
-      const pNorm = p.life / p.maxLife;
-
-      if (p.type === 'confetti') {
+      if (p.type === 'digital_pixel') {
         p.vx *= p.drag;
         p.vy = p.vy * p.drag + p.gravity * dt;
         p.x += p.vx * dt;
         p.y += p.vy * dt;
-        p.rotX += p.vRotX * dt;
-        p.rotY += p.vRotY * dt;
-      } else if (p.type === 'star') {
+        p.rot += p.vRot * dt;
+      } else if (p.type === 'binary') {
+        p.x += p.vx * dt;
+        p.y += p.vy * dt;
+      } else if (p.type === 'cyber_shard') {
         p.vx *= p.drag;
         p.vy = p.vy * p.drag + p.gravity * dt;
         p.x += p.vx * dt;
         p.y += p.vy * dt;
         p.rotation += p.vRot * dt;
-      } else if (p.type === 'smoke') {
-        p.vx *= p.drag;
-        p.vy = p.vy * p.drag + p.gravity * dt;
+      } else if (p.type === 'glitch_fragment') {
         p.x += p.vx * dt;
         p.y += p.vy * dt;
-        p.radius = 15 + (p.maxRadius - 15) * Math.sin(pNorm * Math.PI * 0.5);
-      } else if (p.type === 'heart') {
-        p.x += (p.vx + Math.sin(p.life * 8) * 40) * dt;
-        p.y += p.vy * dt;
-        p.rotation += p.vRot * dt;
       } else {
-        // Sparkle
+        // Spark
         p.x += p.vx * dt;
         p.y += p.vy * dt;
         p.rotation += p.vRot * dt;
@@ -345,7 +329,7 @@ export class VFXEngine {
     }
     const decay = this.screenShakeTime / 300;
     const currentAmp = this.screenShakeIntensity * decay;
-    const freq = 35;
+    const freq = 36;
     const angle = (performance.now() / 1000) * freq;
     return {
       x: Math.sin(angle) * currentAmp,
@@ -357,8 +341,8 @@ export class VFXEngine {
   draw(ctx) {
     ctx.save();
 
-    // 1. Render Stardust Blade Trail (Tapered glowing spline curve)
-    this.drawBladeTrail(ctx);
+    // 1. Render Neon Plasma Blade Trail (Beat Saber Style)
+    this.drawNeonPlasmaBlade(ctx);
 
     // 2. Render Shockwaves
     this.drawShockwaves(ctx);
@@ -369,24 +353,24 @@ export class VFXEngine {
     // 4. Render Particles
     this.drawParticles(ctx);
 
-    // 5. Render Score Popups
+    // 5. Render Data Popups
     this.drawScorePopups(ctx);
 
     ctx.restore();
   }
 
-  // Draw Stardust Blade Trail with glowing white core and neon cyan bloom
-  drawBladeTrail(ctx) {
+  // Draw Neon Plasma Blade (Pure White Core + Thick Glowing Cyan/Electric Blue Aura)
+  drawNeonPlasmaBlade(ctx) {
     const pts = this.bladePoints;
     if (pts.length < 2) return;
 
     const now = performance.now();
 
-    // Draw outer electric cyan bloom
+    // Layer 1: Wide Electric Blue / Cyan Outer Plasma Aura
     ctx.save();
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
-    ctx.shadowBlur = 24;
+    ctx.shadowBlur = 32;
     ctx.shadowColor = 'rgba(0, 242, 254, 0.95)';
 
     for (let i = 1; i < pts.length; i++) {
@@ -394,66 +378,89 @@ export class VFXEngine {
       const p1 = pts[i];
       const ageNorm = (now - p1.time) / 180;
       const alpha = Math.max(1 - ageNorm, 0);
-      const width = Math.max((1 - ageNorm) * 16, 2);
+      const width = Math.max((1 - ageNorm) * 22, 3);
 
       ctx.beginPath();
       ctx.moveTo(p0.x, p0.y);
       ctx.lineTo(p1.x, p1.y);
-      ctx.strokeStyle = `rgba(0, 242, 254, ${alpha * 0.85})`;
+      ctx.strokeStyle = `rgba(0, 242, 254, ${alpha * 0.9})`;
       ctx.lineWidth = width;
       ctx.stroke();
     }
     ctx.restore();
 
-    // Draw inner bright white core with electric blue edge
+    // Layer 2: Core Electric Cyan Shimmer
     ctx.save();
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
-    ctx.shadowBlur = 12;
-    ctx.shadowColor = 'rgba(255, 255, 255, 0.95)';
+    ctx.shadowBlur = 18;
+    ctx.shadowColor = '#38bdf8';
 
     for (let i = 1; i < pts.length; i++) {
       const p0 = pts[i - 1];
       const p1 = pts[i];
       const ageNorm = (now - p1.time) / 180;
       const alpha = Math.max(1 - ageNorm, 0);
-      const width = Math.max((1 - ageNorm) * 6, 1.5);
+      const width = Math.max((1 - ageNorm) * 12, 2);
 
       ctx.beginPath();
       ctx.moveTo(p0.x, p0.y);
       ctx.lineTo(p1.x, p1.y);
-      ctx.strokeStyle = `rgba(255, 255, 255, ${alpha * 0.95})`;
+      ctx.strokeStyle = `rgba(56, 189, 248, ${alpha * 0.95})`;
+      ctx.lineWidth = width;
+      ctx.stroke();
+    }
+    ctx.restore();
+
+    // Layer 3: Pure Radiant White Plasma Core
+    ctx.save();
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.shadowBlur = 10;
+    ctx.shadowColor = '#ffffff';
+
+    for (let i = 1; i < pts.length; i++) {
+      const p0 = pts[i - 1];
+      const p1 = pts[i];
+      const ageNorm = (now - p1.time) / 180;
+      const alpha = Math.max(1 - ageNorm, 0);
+      const width = Math.max((1 - ageNorm) * 6, 1.8);
+
+      ctx.beginPath();
+      ctx.moveTo(p0.x, p0.y);
+      ctx.lineTo(p1.x, p1.y);
+      ctx.strokeStyle = `rgba(255, 255, 255, ${alpha * 0.98})`;
       ctx.lineWidth = width;
       ctx.stroke();
     }
 
-    // Glowing blade tip indicator (Neon Cyan & Gold Core)
+    // Glowing Blade Tip Crosshair Indicator
     const tip = pts[pts.length - 1];
     ctx.beginPath();
-    ctx.arc(tip.x, tip.y, 6.5, 0, Math.PI * 2);
+    ctx.arc(tip.x, tip.y, 8, 0, Math.PI * 2);
     ctx.fillStyle = '#ffffff';
-    ctx.shadowBlur = 18;
+    ctx.shadowBlur = 24;
     ctx.shadowColor = '#00f2fe';
     ctx.fill();
 
     ctx.beginPath();
-    ctx.arc(tip.x, tip.y, 2.5, 0, Math.PI * 2);
-    ctx.fillStyle = '#fbbf24';
+    ctx.arc(tip.x, tip.y, 3.5, 0, Math.PI * 2);
+    ctx.fillStyle = '#00f2fe';
     ctx.fill();
 
     ctx.restore();
   }
 
-  // Draw expanding shockwaves (Neon Cyan & Gold)
+  // Draw expanding shockwaves
   drawShockwaves(ctx) {
     for (const sw of this.shockwaves) {
       const alpha = Math.max(1 - sw.life / sw.maxLife, 0);
       ctx.save();
       ctx.beginPath();
       ctx.arc(sw.x, sw.y, sw.radius, 0, Math.PI * 2);
-      ctx.strokeStyle = sw.color.replace('0.95', (alpha * 0.95).toFixed(2)).replace('0.9', (alpha * 0.9).toFixed(2));
+      ctx.strokeStyle = sw.color.replace('0.95', (alpha * 0.95).toFixed(2));
       ctx.lineWidth = sw.lineWidth;
-      ctx.shadowBlur = 16;
+      ctx.shadowBlur = 18;
       ctx.shadowColor = '#00f2fe';
       ctx.stroke();
       ctx.restore();
@@ -473,15 +480,15 @@ export class VFXEngine {
       ctx.moveTo(sf.x - cos * halfLen, sf.y - sin * halfLen);
       ctx.lineTo(sf.x + cos * halfLen, sf.y + sin * halfLen);
       ctx.strokeStyle = `rgba(255, 255, 255, ${alpha})`;
-      ctx.lineWidth = Math.max(8 * alpha, 2);
-      ctx.shadowBlur = 24;
+      ctx.lineWidth = Math.max(9 * alpha, 2);
+      ctx.shadowBlur = 28;
       ctx.shadowColor = '#00f2fe';
       ctx.stroke();
 
       // Sharp central burst
       ctx.beginPath();
-      ctx.arc(sf.x, sf.y, 14 * alpha, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(0, 242, 254, ${alpha * 0.85})`;
+      ctx.arc(sf.x, sf.y, 16 * alpha, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(0, 242, 254, ${alpha * 0.9})`;
       ctx.shadowColor = '#fbbf24';
       ctx.fill();
 
@@ -489,7 +496,7 @@ export class VFXEngine {
     }
   }
 
-  // Draw all particle types
+  // Draw all particle types (Digital Bits, Binary Code, Shards)
   drawParticles(ctx) {
     for (const p of this.particles) {
       const progress = p.life / p.maxLife;
@@ -498,37 +505,38 @@ export class VFXEngine {
       ctx.save();
       ctx.translate(p.x, p.y);
 
-      if (p.type === 'confetti') {
-        ctx.rotate(p.rotX);
-        const scaleY = Math.cos(p.rotY);
-        ctx.scale(1, scaleY);
-        ctx.fillStyle = p.color;
-        ctx.globalAlpha = alpha;
-        ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
-      } else if (p.type === 'star') {
-        ctx.rotate(p.rotation);
+      if (p.type === 'digital_pixel') {
+        ctx.rotate(p.rot);
         ctx.fillStyle = p.color;
         ctx.globalAlpha = alpha;
         ctx.shadowBlur = 10;
         ctx.shadowColor = p.color;
-        this.renderStarShape(ctx, 0, 0, 5, p.size, p.size * 0.45);
-        ctx.fill();
-      } else if (p.type === 'smoke') {
-        ctx.globalAlpha = alpha * 0.65;
+        ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+      } else if (p.type === 'binary') {
+        ctx.font = `bold ${p.size}px monospace`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
         ctx.fillStyle = p.color;
-        ctx.beginPath();
-        ctx.arc(0, 0, p.radius, 0, Math.PI * 2);
-        ctx.fill();
-      } else if (p.type === 'heart') {
-        ctx.rotate(p.rotation);
         ctx.globalAlpha = alpha;
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = p.color;
+        ctx.fillText(p.char, 0, 0);
+      } else if (p.type === 'cyber_shard') {
+        ctx.rotate(p.rotation);
         ctx.fillStyle = p.color;
-        ctx.shadowBlur = 8;
-        ctx.shadowColor = '#ff3366';
-        this.renderHeartShape(ctx, 0, 0, p.size);
+        ctx.globalAlpha = alpha;
+        ctx.shadowBlur = 12;
+        ctx.shadowColor = p.color;
+        this.renderShardPath(ctx, 0, 0, p.size);
         ctx.fill();
+      } else if (p.type === 'glitch_fragment') {
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = alpha * 0.85;
+        ctx.shadowBlur = 14;
+        ctx.shadowColor = '#ef4444';
+        ctx.fillRect(-p.sizeW / 2, -p.sizeH / 2, p.sizeW, p.sizeH);
       } else {
-        // Sparkle
+        // Spark
         ctx.rotate(p.rotation);
         ctx.globalAlpha = alpha;
         ctx.fillStyle = p.color;
@@ -541,67 +549,19 @@ export class VFXEngine {
     }
   }
 
-  // Helper: draw 5-point star path
-  renderStarShape(ctx, cx, cy, spikes, outerRadius, innerRadius) {
-    let rot = (Math.PI / 2) * 3;
-    let x = cx;
-    let y = cy;
-    const step = Math.PI / spikes;
-
+  // Helper: Draw sharp cyber shard polygon
+  renderShardPath(ctx, cx, cy, size) {
     ctx.beginPath();
-    ctx.moveTo(cx, cy - outerRadius);
-    for (let i = 0; i < spikes; i++) {
-      x = cx + Math.cos(rot) * outerRadius;
-      y = cy + Math.sin(rot) * outerRadius;
-      ctx.lineTo(x, y);
-      rot += step;
-
-      x = cx + Math.cos(rot) * innerRadius;
-      y = cy + Math.sin(rot) * innerRadius;
-      ctx.lineTo(x, y);
-      rot += step;
-    }
-    ctx.lineTo(cx, cy - outerRadius);
+    ctx.moveTo(cx, cy - size);
+    ctx.lineTo(cx + size * 0.6, cy);
+    ctx.lineTo(cx, cy + size * 0.8);
+    ctx.lineTo(cx - size * 0.6, cy);
     ctx.closePath();
   }
 
-  // Helper: draw small heart path
-  renderHeartShape(ctx, x, y, size) {
-    const s = size / 20;
-    ctx.beginPath();
-    ctx.moveTo(x, y - 4 * s);
-    ctx.bezierCurveTo(x + 6 * s, y - 14 * s, x + 16 * s, y - 4 * s, x, y + 14 * s);
-    ctx.bezierCurveTo(x - 16 * s, y - 4 * s, x - 6 * s, y - 14 * s, x, y - 4 * s);
-    ctx.closePath();
-  }
-
-  // Draw floating score popups
+  // Draw floating data popups: completely disabled for clean UI
   drawScorePopups(ctx) {
-    for (const sp of this.scorePopups) {
-      ctx.save();
-      ctx.translate(sp.x, sp.y);
-      ctx.scale(sp.scale, sp.scale);
-      ctx.globalAlpha = sp.alpha;
-
-      ctx.font = sp.isCombo 
-        ? '800 28px "Plus Jakarta Sans", sans-serif'
-        : '800 22px "Plus Jakarta Sans", sans-serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-
-      // Outline
-      ctx.strokeStyle = '#000000';
-      ctx.lineWidth = 4;
-      ctx.strokeText(sp.text, 0, 0);
-
-      // Fill + glow
-      ctx.fillStyle = sp.color;
-      ctx.shadowBlur = 12;
-      ctx.shadowColor = sp.color;
-      ctx.fillText(sp.text, 0, 0);
-
-      ctx.restore();
-    }
+    // Zero text popups drawn
   }
 }
 

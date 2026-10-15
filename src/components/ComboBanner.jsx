@@ -14,7 +14,7 @@ export const ComboBanner = ({ combo, toastMessage }) => {
         <div className="fixed top-24 left-1/2 -translate-x-1/2 z-35 pointer-events-none animate-bounce">
           <div className="glass-panel-luxury px-6 py-2.5 rounded-full border border-cyan-400/40 shadow-2xl flex items-center gap-2.5">
             <Heart className="w-4 h-4 text-cyan-400 fill-cyan-400 animate-pulse" />
-            <span className="text-sm md:text-base font-serif-romantic italic text-white font-medium tracking-wide">
+            <span className="text-sm md:text-base font-gamer text-white font-bold tracking-wide">
               {toastMessage}
             </span>
             <Sparkles className="w-4 h-4 text-amber-300" />

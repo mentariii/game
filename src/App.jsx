@@ -15,23 +15,23 @@ import StartScreenModal from './components/StartScreenModal';
 
 const PAPARAZZI_CAPTIONS = {
   bomb: [
-    "Muka panik kena bom 💥",
-    "Detik-detik syok kena bom wkwk 💣",
-    "Kaget banget yaa kena bom 😅"
+    "Muka panik kena Danger Mine 💥",
+    "Detik-detik syok kena bom jebakan wkwk ⚠️",
+    "Kaget banget yaa kena mine 😅"
   ],
   combo: [
-    "Fokus banget nebasnya 👀",
+    "Fokus banget nebas Loot Box 👀",
     "Muka serius mode bantai combo 🔥",
-    "Tatapan tajam sang master pedang ⚔️"
+    "Tatapan tajam sang pro gamer ⚔️"
   ],
   boss: [
-    "Mode bantai kue ultah boss 🔥",
-    "Ekspresi sabetan maut ke kue 🎂",
-    "Ngebut nebas kue ultah mas al ⚡"
+    "Mode bantai Boss Vault Core 🔥",
+    "Ekspresi sabetan maut 30 combo ⚡",
+    "Ngebut nebas brankas rahasia Mas Al 🏆"
   ],
   timer: [
     "Serius amat bos 🎮",
-    "Lagi asyik-asyiknya main ✨",
+    "Lagi asyik-asyiknya main game ✨",
     "Gantengnya Mas Al pas fokus nebas 🥰"
   ]
 };
@@ -54,13 +54,17 @@ export function App() {
   const [cameraStatus, setCameraStatus] = useState('idle');
   const [bombPulseActive, setBombPulseActive] = useState(false);
 
+  // Biometric Gesture State (🫶 Two-Handed Heart or 🫰 Finger Heart)
+  const [gestureState, setGestureState] = useState({ isHeart: false, type: null, handsCount: 0 });
+
   // Progressive Waves & Timer State
   const [currentWave, setCurrentWave] = useState(1);
-  const [waveTitle, setWaveTitle] = useState("Wave 1: Pemanasan 🎮");
+  const [waveTitle, setWaveTitle] = useState("ROUND 1: PEMANASAN 🎮");
   const [timeLeft, setTimeLeft] = useState(LOVE_CONFIG.gameDurationSeconds);
 
   // Modals & Overlays
   const [isStartModalOpen, setIsStartModalOpen] = useState(true);
+  const [isGlitchActive, setIsGlitchActive] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [floatingPolaroids, setFloatingPolaroids] = useState([]);
   const [isBossPhase, setIsBossPhase] = useState(false);
@@ -165,14 +169,25 @@ export function App() {
       },
       onPaparazziCapture: (reason) => {
         capturePaparazziSnapshot(reason);
+      },
+      onGlitchTrigger: () => {
+        setIsGlitchActive(true);
+        setBombPulseActive(true);
+        setTimeout(() => {
+          setIsGlitchActive(false);
+          setBombPulseActive(false);
+        }, 450);
       }
     });
     gameRef.current = game;
 
-    // Hand Tracker
+    // Hand Tracker (Dual Hand Heart Detection + Slicing)
     const tracker = new HandTracker({
       onPoint: (x, y) => {
         game.handleBladeMove(x, y);
+      },
+      onGesture: (state) => {
+        setGestureState(state);
       },
       onStatusChange: (status) => {
         setCameraStatus(status);
@@ -203,10 +218,14 @@ export function App() {
     handleResize();
     window.addEventListener('resize', handleResize);
 
+    // Auto-request webcam on mount for instant Biometric Scanner experience
+    if (videoRef.current) {
+      tracker.startCamera(videoRef.current);
+    }
+
     // Initial audio resume trigger on first interaction fallback
     const initAudio = () => {
       soundEngine.init();
-      soundEngine.startAmbientBgm(LOVE_CONFIG.audio.customBgmUrl);
       window.removeEventListener('pointerdown', initAudio);
       window.removeEventListener('keydown', initAudio);
     };
@@ -242,33 +261,47 @@ export function App() {
     };
     animId = requestAnimationFrame(render);
 
+    // Mouse / Touch slicing support on canvas (Mouse / Fallback mode)
+    const handlePointerMove = (e) => {
+      game.handleBladeMove(e.clientX, e.clientY);
+    };
+    canvas.addEventListener('pointermove', handlePointerMove);
+
     return () => {
       cancelAnimationFrame(animId);
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('pointerdown', initAudio);
       window.removeEventListener('keydown', initAudio);
+      canvas.removeEventListener('pointermove', handlePointerMove);
       if (trackerRef.current) trackerRef.current.stopCamera();
       soundEngine.stopAmbientBgm();
     };
   }, [showToast, capturePaparazziSnapshot]);
 
-  // Start With Camera Choice from Start Screen
-  const handleStartWithCamera = async () => {
+  // Biometric Gesture Confirmed Unlock -> Start Game Immediately
+  const handleBiometricUnlock = () => {
     setIsStartModalOpen(false);
     soundEngine.init();
     soundEngine.startAmbientBgm(LOVE_CONFIG.audio.customBgmUrl);
+    showToast("Level 21 Unlocked! Selamat Datang, Mas Al 🎮");
+    gameRef.current?.startGame();
+  };
 
-    if (videoRef.current) {
-      await trackerRef.current?.startCamera(videoRef.current);
+  // Manual Camera Request if browser required explicit tap
+  const handleRequestCamera = async () => {
+    soundEngine.init();
+    if (videoRef.current && trackerRef.current) {
+      await trackerRef.current.startCamera(videoRef.current);
     }
   };
 
-  // Start With Mouse Choice from Start Screen
+  // Manual Override with Mouse / Touch Fallback
   const handleStartWithMouse = () => {
     setIsStartModalOpen(false);
     soundEngine.init();
     soundEngine.startAmbientBgm(LOVE_CONFIG.audio.customBgmUrl);
-    showToast("Mode Mouse Aktif ✨ Klik ikon kamera di atas kapan saja!");
+    showToast("Mode Mouse Aktif 🖱️ Game Dimulai!");
+    gameRef.current?.startGame();
   };
 
   // Toggle Camera in HUD anytime
@@ -314,13 +347,14 @@ export function App() {
   };
 
   return (
-    <div className="relative w-screen h-screen overflow-hidden bg-black select-none font-sans">
+    <div className={`relative w-screen h-screen overflow-hidden bg-black select-none font-sans ${isGlitchActive ? 'cyber-glitch-active' : ''}`}>
       
-      {/* 1. Camera Background & Flattering Vignette */}
+      {/* 1. Camera Background & Flattering Vignette (Cyberpunk Scanner Filter during Lock Phase) */}
       <CameraBackground
         ref={videoRef}
         cameraActive={cameraActive}
         bombPulseActive={bombPulseActive}
+        isScannerMode={isStartModalOpen}
       />
 
       {/* 2. Main 60fps Game & VFX Canvas */}
@@ -329,22 +363,24 @@ export function App() {
         className="absolute inset-0 w-full h-full z-10 cursor-crosshair touch-none"
       />
 
-      {/* 3. Top Glassmorphic HUD with Wave Indicator & Countdown Timer */}
-      <TopHUD
-        score={score}
-        lives={lives}
-        combo={combo}
-        targetScore={LOVE_CONFIG.targetScore}
-        isMuted={isMuted}
-        onToggleMute={handleToggleMute}
-        cameraActive={cameraActive}
-        onToggleCamera={handleToggleCamera}
-        cameraStatus={cameraStatus}
-        onTriggerBoss={handleTriggerBoss}
-        currentWave={currentWave}
-        waveTitle={waveTitle}
-        timeLeft={timeLeft}
-      />
+      {/* 3. Top Glassmorphic HUD with Round Indicator & Countdown Timer (Active during Gameplay) */}
+      {!isStartModalOpen && (
+        <TopHUD
+          score={score}
+          lives={lives}
+          combo={combo}
+          targetScore={LOVE_CONFIG.targetScore}
+          isMuted={isMuted}
+          onToggleMute={handleToggleMute}
+          cameraActive={cameraActive}
+          onToggleCamera={handleToggleCamera}
+          cameraStatus={cameraStatus}
+          onTriggerBoss={handleTriggerBoss}
+          currentWave={currentWave}
+          waveTitle={waveTitle}
+          timeLeft={timeLeft}
+        />
+      )}
 
       {/* 4. Floating Polaroid Cards (if any) */}
       {floatingPolaroids.map((mem) => (
@@ -361,14 +397,18 @@ export function App() {
       {/* 6. Boss Encounter Top Prompt Overlay */}
       <GiantBossOverlay isBossPhase={isBossPhase} />
 
-      {/* 7. Start / Camera Permission Modal */}
+      {/* 7. Start Screen: Modern Console Achievement & Biometric Heart Scanner */}
       <StartScreenModal
         isOpen={isStartModalOpen}
-        onStartWithCamera={handleStartWithCamera}
+        cameraActive={cameraActive}
+        cameraStatus={cameraStatus}
+        gestureState={gestureState}
+        onRequestCamera={handleRequestCamera}
+        onUnlock={handleBiometricUnlock}
         onStartWithMouse={handleStartWithMouse}
       />
 
-      {/* 8. Grand Finale: Birthday Letter & "Candid Kamu 📸" Polaroid Modal */}
+      {/* 8. Grand Finale: Birthday Victory Screen & Candid Photos Modal */}
       <BirthdayLetterModal
         isOpen={isFinaleOpen}
         candidPhotos={candidPhotos}

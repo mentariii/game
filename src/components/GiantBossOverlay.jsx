@@ -1,23 +1,25 @@
 import React from 'react';
-import { Sparkles, Gift } from 'lucide-react';
+import { Trophy, Zap, Swords } from 'lucide-react';
 
 export const GiantBossOverlay = ({ isBossPhase }) => {
   if (!isBossPhase) return null;
 
   return (
-    <div className="fixed top-24 left-1/2 -translate-x-1/2 z-35 pointer-events-none text-center">
-      <div className="glass-panel-luxury px-8 py-3.5 rounded-3xl border border-amber-300/60 shadow-2xl animate-bounce">
-        <div className="flex items-center justify-center gap-2 text-amber-300 mb-1">
-          <Sparkles className="w-5 h-5 animate-spin" style={{ animationDuration: '6s' }} />
-          <span className="text-xs font-bold uppercase tracking-widest text-amber-200">
-            Puncak Kejutan Ulang Tahun
-          </span>
-          <Sparkles className="w-5 h-5 animate-spin" style={{ animationDuration: '6s' }} />
+    <div className="fixed top-20 sm:top-24 left-1/2 -translate-x-1/2 z-35 pointer-events-none text-center w-full max-w-xl px-4 animate-fadeIn font-gamer">
+      <div className="glass-panel-luxury px-6 sm:px-8 py-3.5 rounded-3xl border border-amber-400/70 shadow-[0_0_50px_rgba(251,191,36,0.4)] bg-[#0b0f19]/95">
+        
+        {/* Boss Encounter Header */}
+        <div className="flex items-center justify-center gap-2 text-amber-300 mb-1 text-xs sm:text-sm font-bold uppercase tracking-widest">
+          <Swords className="w-4 h-4 text-amber-400 animate-bounce" />
+          <span>FINAL BOSS ENCOUNTER</span>
+          <Trophy className="w-4 h-4 text-amber-300 animate-pulse" />
         </div>
-        <h2 className="text-lg md:text-xl font-bold font-serif-romantic text-white flex items-center justify-center gap-2">
-          <Gift className="w-5 h-5 text-cyan-300" />
-          Sabet 30x beruntun untuk membuka kejutan terakhir! ✨
+
+        {/* User Prompt: 💥 BOSS FIGHT: Sabet 20x Beruntun Untuk Menang! 💥 */}
+        <h2 className="text-base sm:text-lg md:text-xl font-extrabold text-white flex items-center justify-center gap-2 drop-shadow-[0_0_15px_rgba(251,191,36,0.9)] tracking-wide">
+          <span>💥 BOSS FIGHT: Sabet 20x Beruntun Untuk Menang! 💥</span>
         </h2>
+
       </div>
     </div>
   );

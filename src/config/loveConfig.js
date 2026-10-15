@@ -4,8 +4,8 @@ export const LOVE_CONFIG = {
   nickname: "Mas Al",
   birthdayMonth: "November",
   birthdayDate: "10 November",
-  targetScore: 5000, // Score needed to trigger the Giant Boss Finale
-  gameDurationSeconds: 120, // 2 minutes duration with 3 progressive waves
+  targetScore: 2500, // Score needed to trigger the Giant Boss Finale before 42s
+  gameDurationSeconds: 60, // Exactly 60 seconds (1 minute) duration
   initialLives: 3,
 
   // Scrapbook Album photos displayed ONLY in the Finale Modal after game finishes
@@ -48,11 +48,11 @@ export const LOVE_CONFIG = {
     }
   ],
 
-  // Sweet Indonesian toast messages when slicing 3D Gift Boxes (tailored for Mas Al)
+  // Sweet Indonesian gamer toast messages (tailored for Mas Al)
   sweetMessages: [
-    "Happy Birthday Mas Al ✨",
+    "Level 21 Unlocked! Happy Birthday Mas Al ✨",
     "Senyum manismu favoritku sepanjang masa 🤍",
-    "Semangat belajarnya buat ke Jerman yaa 🇩🇪✨",
+    "Semangat belajarnya biar cepet ke Jerman yaa 🇩🇪✨",
     "Pria hebat kebanggaanku selamanya 💫",
     "Kesehatannya dijaga yaa sayangg 🌸",
     "Jangan suka emosi pas main game wkwk 🎮",
@@ -62,19 +62,15 @@ export const LOVE_CONFIG = {
     "Doa terbaikku memeluk setiap langkahmu 🎂"
   ],
 
-  // Playful labels on 3D Storm Clouds / Bombs
+  // Obstacle labels (unused, clean mines)
   bombLabels: [
-    "Overthinking 💭",
-    "Main Game Lupa Waktu 🎮",
-    "Marah-Marah Pas Main 😤",
-    "Kangen Berat 🥺",
-    "Telat Makan 🍜"
+    "DANGER_MINE"
   ],
 
-  // The Grand Romantic Birthday Letter Modal
+  // The Grand Birthday Victory Modal (Console Gamer E-Sports Style)
   letter: {
-    modalMainTitle: "Level 21 Unlocked! 🎮",
-    modalSubTitle: "Happy Birthday Mas Al • 10 November",
+    modalMainTitle: "MISSION PASSED: LEVEL 21 🏆",
+    modalSubTitle: "Player: Mas Al | 10 November",
     title: "Untuk Mas Al tersayang muah muah 💋",
     greeting: "",
     paragraphs: [

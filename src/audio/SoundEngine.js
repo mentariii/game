@@ -160,108 +160,120 @@ class SoundEngine {
     }
   }
 
-  // 1. Balloon Pop + Shimmering Harp Chime Arpeggio
-  playBalloonPop() {
+  // 1. Mechanical Cyber-Slash / Laser Blade Energy Cut
+  playCyberSlash() {
     if (!this.ctx || this.isMuted) return;
     const now = this.ctx.currentTime;
 
-    // Crisp Pop transient
-    const popOsc = this.ctx.createOscillator();
-    const popGain = this.ctx.createGain();
-    popOsc.type = 'triangle';
-    popOsc.frequency.setValueAtTime(280, now);
-    popOsc.frequency.exponentialRampToValueAtTime(60, now + 0.05);
+    // Laser Blade Hum & Cut Transient (Triangle + Sawtooth quick frequency sweep)
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(840, now);
+    osc.frequency.exponentialRampToValueAtTime(120, now + 0.08);
 
-    popGain.gain.setValueAtTime(0.5, now);
-    popGain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+    gain.gain.setValueAtTime(0.35, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
 
-    popOsc.connect(popGain);
-    popGain.connect(this.sfxGain);
-    popOsc.start(now);
-    popOsc.stop(now + 0.06);
+    const filter = this.ctx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.setValueAtTime(1400, now);
+    filter.Q.setValueAtTime(4.0, now);
 
-    // Shimmering Pentatonic Harp Chimes (3 rapid sparkling notes)
-    const notes = [659.25, 783.99, 1046.50, 1318.51];
-    notes.forEach((freq, idx) => {
-      const delay = 0.03 + idx * 0.045;
-      const osc = this.ctx.createOscillator();
-      const gain = this.ctx.createGain();
+    osc.connect(filter);
+    filter.connect(gain);
+    gain.connect(this.sfxGain);
+    osc.start(now);
+    osc.stop(now + 0.1);
 
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(freq, now + delay);
-
-      gain.gain.setValueAtTime(0.2, now + delay);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + delay + 0.7);
-
-      osc.connect(gain);
-      gain.connect(this.sfxGain);
-      if (this.convolver) gain.connect(this.convolver);
-
-      osc.start(now + delay);
-      osc.stop(now + delay + 0.75);
-    });
+    // Mechanical Energy Sub-Chirp
+    const subOsc = this.ctx.createOscillator();
+    const subGain = this.ctx.createGain();
+    subOsc.type = 'sine';
+    subOsc.frequency.setValueAtTime(240, now);
+    subOsc.frequency.exponentialRampToValueAtTime(80, now + 0.07);
+    subGain.gain.setValueAtTime(0.28, now);
+    subGain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+    subOsc.connect(subGain);
+    subGain.connect(this.sfxGain);
+    subOsc.start(now);
+    subOsc.stop(now + 0.09);
   }
 
-  // 2. Gift Box Slice: Crystalline bell chord + sparkle high-frequency shimmer
-  playGiftSlice() {
+  // Backward compatibility alias
+  playBalloonPop() {
+    this.playCyberSlash();
+  }
+
+  // 2. Data Node Decrypt: Crystalline digital arpeggio + cryptographic chime
+  playDataDecrypt() {
     if (!this.ctx || this.isMuted) return;
     const now = this.ctx.currentTime;
 
-    // Bell chord: E5, G#5, B5, E6
-    const freqs = [659.25, 830.61, 987.77, 1318.51];
+    // Fast Cyber Arpeggio: F5, A5, C6, E6
+    const freqs = [698.46, 880.00, 1046.50, 1318.51];
     freqs.forEach((f, i) => {
       const osc = this.ctx.createOscillator();
       const gain = this.ctx.createGain();
-      osc.type = i % 2 === 0 ? 'sine' : 'triangle';
-      osc.frequency.setValueAtTime(f, now);
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(f, now + i * 0.035);
 
-      gain.gain.setValueAtTime(0.25 - i * 0.04, now);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + 1.1);
+      gain.gain.setValueAtTime(0.25 - i * 0.03, now + i * 0.035);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + i * 0.035 + 0.8);
 
       osc.connect(gain);
       gain.connect(this.sfxGain);
       if (this.convolver) gain.connect(this.convolver);
 
-      osc.start(now);
-      osc.stop(now + 1.2);
+      osc.start(now + i * 0.035);
+      osc.stop(now + i * 0.035 + 0.85);
     });
 
-    // Shimmer sparkle envelope
-    const noiseOsc = this.ctx.createOscillator();
-    const noiseGain = this.ctx.createGain();
-    noiseOsc.type = 'sine';
-    noiseOsc.frequency.setValueAtTime(2093.00, now); // C7
-    noiseOsc.frequency.exponentialRampToValueAtTime(3135.96, now + 0.15); // G7
-    noiseGain.gain.setValueAtTime(0.12, now);
-    noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
-
-    noiseOsc.connect(noiseGain);
-    noiseGain.connect(this.sfxGain);
-    noiseOsc.start(now);
-    noiseOsc.stop(now + 0.4);
+    // High frequency digital data shimmer
+    const noise = this.ctx.createOscillator();
+    const noiseG = this.ctx.createGain();
+    noise.type = 'square';
+    noise.frequency.setValueAtTime(2400, now);
+    noise.frequency.setValueAtTime(3200, now + 0.04);
+    noiseG.gain.setValueAtTime(0.08, now);
+    noiseG.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+    noise.connect(noiseG);
+    noiseG.connect(this.sfxGain);
+    noise.start(now);
+    noise.stop(now + 0.13);
   }
 
-  // 3. Heart Slice: Warm romantic bell & pulse
-  playHeartSlice() {
+  // Backward compatibility alias
+  playGiftSlice() {
+    this.playDataDecrypt();
+  }
+
+  // 3. Shield Node Recharge: Uplifting holographic energy shield restore tone
+  playShieldRecharge() {
     if (!this.ctx || this.isMuted) return;
     const now = this.ctx.currentTime;
-    const freqs = [440.00, 554.37, 659.25, 880.00]; // A major
+    const freqs = [523.25, 659.25, 783.99, 1046.50]; // C Major ascending
     freqs.forEach((f, idx) => {
       const osc = this.ctx.createOscillator();
       const gain = this.ctx.createGain();
       osc.type = 'sine';
-      osc.frequency.setValueAtTime(f, now + idx * 0.03);
+      osc.frequency.setValueAtTime(f, now + idx * 0.04);
 
-      gain.gain.setValueAtTime(0.22, now + idx * 0.03);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + idx * 0.03 + 0.9);
+      gain.gain.setValueAtTime(0.22, now + idx * 0.04);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + idx * 0.04 + 0.9);
 
       osc.connect(gain);
       gain.connect(this.sfxGain);
       if (this.convolver) gain.connect(this.convolver);
 
-      osc.start(now + idx * 0.03);
-      osc.stop(now + idx * 0.03 + 0.95);
+      osc.start(now + idx * 0.04);
+      osc.stop(now + idx * 0.04 + 0.95);
     });
+  }
+
+  // Backward compatibility alias
+  playHeartSlice() {
+    this.playShieldRecharge();
   }
 
   // 4. Combo Pitch Escalation: Note increases with combo count along Major Pentatonic
@@ -271,14 +283,14 @@ class SoundEngine {
     const idx = Math.min(Math.max(comboCount - 1, 0), this.comboScale.length - 1);
     const baseFreq = this.comboScale[idx];
 
-    // Dual-harmonic chime tone
+    // Dual-harmonic cyber chime tone
     [baseFreq, baseFreq * 1.5].forEach((freq, i) => {
       const osc = this.ctx.createOscillator();
       const gain = this.ctx.createGain();
       osc.type = i === 0 ? 'triangle' : 'sine';
       osc.frequency.setValueAtTime(freq, now);
 
-      gain.gain.setValueAtTime(0.24, now);
+      gain.gain.setValueAtTime(0.26, now);
       gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.85);
 
       osc.connect(gain);
@@ -290,43 +302,51 @@ class SoundEngine {
     });
   }
 
-  // 5. Bomb Hit: Low sub-bass sine drop + comical slide whistle
-  playBombThud() {
+  // 5. Red Glitch Virus Corruption Hit: Bitcrushed digital distortion glitch burst with low buzz
+  playGlitchCorruption() {
     if (!this.ctx || this.isMuted) return;
     const now = this.ctx.currentTime;
 
-    // Sub-bass drop: 120Hz down to 35Hz
-    const subOsc = this.ctx.createOscillator();
-    const subGain = this.ctx.createGain();
-    subOsc.type = 'sine';
-    subOsc.frequency.setValueAtTime(120, now);
-    subOsc.frequency.exponentialRampToValueAtTime(35, now + 0.4);
+    // Low harsh square glitch distortion
+    const glitchOsc = this.ctx.createOscillator();
+    const glitchGain = this.ctx.createGain();
+    glitchOsc.type = 'sawtooth';
+    glitchOsc.frequency.setValueAtTime(95, now);
+    glitchOsc.frequency.setValueAtTime(180, now + 0.04);
+    glitchOsc.frequency.setValueAtTime(50, now + 0.1);
+    glitchOsc.frequency.exponentialRampToValueAtTime(25, now + 0.35);
 
-    subGain.gain.setValueAtTime(0.6, now);
-    subGain.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
+    glitchGain.gain.setValueAtTime(0.55, now);
+    glitchGain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
 
-    subOsc.connect(subGain);
-    subGain.connect(this.sfxGain);
-    subOsc.start(now);
-    subOsc.stop(now + 0.5);
+    glitchOsc.connect(glitchGain);
+    glitchGain.connect(this.sfxGain);
+    glitchOsc.start(now);
+    glitchOsc.stop(now + 0.42);
 
-    // Descending cartoon slide whistle
-    const slideOsc = this.ctx.createOscillator();
-    const slideGain = this.ctx.createGain();
-    slideOsc.type = 'sawtooth';
-    slideOsc.frequency.setValueAtTime(480, now + 0.05);
-    slideOsc.frequency.exponentialRampToValueAtTime(140, now + 0.38);
+    // High frequency digital static crackle
+    const staticOsc = this.ctx.createOscillator();
+    const staticGain = this.ctx.createGain();
+    staticOsc.type = 'square';
+    staticOsc.frequency.setValueAtTime(1400, now);
+    staticOsc.frequency.setValueAtTime(650, now + 0.06);
+    staticOsc.frequency.setValueAtTime(2200, now + 0.12);
 
-    slideGain.gain.setValueAtTime(0.12, now + 0.05);
-    slideGain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+    staticGain.gain.setValueAtTime(0.25, now);
+    staticGain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
 
-    slideOsc.connect(slideGain);
-    slideGain.connect(this.sfxGain);
-    slideOsc.start(now + 0.05);
-    slideOsc.stop(now + 0.42);
+    staticOsc.connect(staticGain);
+    staticGain.connect(this.sfxGain);
+    staticOsc.start(now);
+    staticOsc.stop(now + 0.3);
   }
 
-  // 6. Infinite Love Revive Sound
+  // Backward compatibility alias
+  playBombThud() {
+    this.playGlitchCorruption();
+  }
+
+  // 6. Emergency Love Protocol Override (Revive)
   playReviveSound() {
     if (!this.ctx || this.isMuted) return;
     const now = this.ctx.currentTime;
@@ -335,10 +355,10 @@ class SoundEngine {
       const delay = idx * 0.06;
       const osc = this.ctx.createOscillator();
       const gain = this.ctx.createGain();
-      osc.type = 'sine';
+      osc.type = 'triangle';
       osc.frequency.setValueAtTime(freq, now + delay);
 
-      gain.gain.setValueAtTime(0.2, now + delay);
+      gain.gain.setValueAtTime(0.22, now + delay);
       gain.gain.exponentialRampToValueAtTime(0.0001, now + delay + 1.2);
 
       osc.connect(gain);
@@ -350,40 +370,43 @@ class SoundEngine {
     });
   }
 
-  // 7. Boss Slash Hit (1 to 10): Escalating pitch chord + resonance
-  playBossSlash(slashIndex) {
+  // 7. Security Vault Core Slash Hit: Escalating electric frequency + metallic impact
+  playVaultSlash(slashIndex) {
     if (!this.ctx || this.isMuted) return;
     const now = this.ctx.currentTime;
-    const baseFreq = 300 + slashIndex * 70;
+    const baseFreq = 260 + slashIndex * 40;
 
-    const freqs = [baseFreq, baseFreq * 1.25, baseFreq * 1.5, baseFreq * 2];
+    const freqs = [baseFreq, baseFreq * 1.5, baseFreq * 2];
     freqs.forEach((f, idx) => {
       const osc = this.ctx.createOscillator();
       const gain = this.ctx.createGain();
       osc.type = idx === 0 ? 'sawtooth' : 'triangle';
       osc.frequency.setValueAtTime(f, now);
 
-      gain.gain.setValueAtTime(0.28, now);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.7);
+      gain.gain.setValueAtTime(0.32, now);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.6);
 
       osc.connect(gain);
       gain.connect(this.sfxGain);
       if (this.convolver) gain.connect(this.convolver);
 
       osc.start(now);
-      osc.stop(now + 0.75);
+      osc.stop(now + 0.65);
     });
   }
 
-  // 8. Boss Final 10th Explosion Fanfare
-  playBossExplosion() {
+  // Backward compatibility alias
+  playBossSlash(slashIndex) {
+    this.playVaultSlash(slashIndex);
+  }
+
+  // 8. Main Vault Breached Fanfare (30th Slash)
+  playVaultBreached() {
     if (!this.ctx || this.isMuted) return;
     const now = this.ctx.currentTime;
 
-    // Huge celebratory fireworks chord cascade
-    const fanfare = [
-      523.25, 659.25, 783.99, 1046.50, 1318.51, 1567.98, 2093.00
-    ];
+    // Triumphant cyberpunk arpeggio cascade
+    const fanfare = [523.25, 659.25, 783.99, 1046.50, 1318.51, 1567.98, 2093.00];
     fanfare.forEach((f, i) => {
       const delay = i * 0.08;
       const osc = this.ctx.createOscillator();
@@ -391,7 +414,7 @@ class SoundEngine {
       osc.type = 'triangle';
       osc.frequency.setValueAtTime(f, now + delay);
 
-      gain.gain.setValueAtTime(0.3, now + delay);
+      gain.gain.setValueAtTime(0.32, now + delay);
       gain.gain.exponentialRampToValueAtTime(0.0001, now + delay + 2.5);
 
       osc.connect(gain);
@@ -401,6 +424,11 @@ class SoundEngine {
       osc.start(now + delay);
       osc.stop(now + delay + 2.6);
     });
+  }
+
+  // Backward compatibility alias
+  playBossExplosion() {
+    this.playVaultBreached();
   }
 
   // 9. Romantic Ambient BGM Generator: Fmaj7 -> G6 -> Em7 -> Am7
@@ -464,6 +492,62 @@ class SoundEngine {
     if (this.customBgmAudio) {
       this.customBgmAudio.pause();
       this.customBgmAudio = null;
+    }
+  }
+
+  // Scanner Beep when gesture is holding (pitches up from 480Hz to 960Hz)
+  playScanBeep(progress = 0) {
+    if (!this.ctx || this.isMuted) return;
+    try {
+      const now = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+
+      const freq = 480 + progress * 480;
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(freq, now);
+
+      gain.gain.setValueAtTime(0.06, now);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.08);
+
+      osc.connect(gain);
+      gain.connect(this.sfxGain);
+
+      osc.start(now);
+      osc.stop(now + 0.09);
+    } catch {
+      // AudioContext fallback
+    }
+  }
+
+  // Biometric Match Confirmed / Access Granted Sound
+  playAccessGranted() {
+    if (!this.ctx || this.isMuted) return;
+    try {
+      const now = this.ctx.currentTime;
+
+      // Ascending futuristic harmonic arpeggio (C5 -> E5 -> G5 -> C6 -> E6)
+      const notes = [523.25, 659.25, 783.99, 1046.50, 1318.51];
+      notes.forEach((freq, idx) => {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        const startTime = now + idx * 0.09;
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, startTime);
+
+        gain.gain.setValueAtTime(0.22, startTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, startTime + 1.2);
+
+        osc.connect(gain);
+        gain.connect(this.sfxGain);
+        if (this.convolver) gain.connect(this.convolver);
+
+        osc.start(startTime);
+        osc.stop(startTime + 1.3);
+      });
+    } catch {
+      // AudioContext fallback
     }
   }
 

@@ -1,6 +1,6 @@
 import React, { forwardRef } from 'react';
 
-export const CameraBackground = forwardRef(({ cameraActive, bombPulseActive }, ref) => {
+export const CameraBackground = forwardRef(({ cameraActive, bombPulseActive, isScannerMode = false }, ref) => {
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none select-none z-0">
       {/* 1. Mirrored Webcam Video Feed */}
@@ -9,9 +9,9 @@ export const CameraBackground = forwardRef(({ cameraActive, bombPulseActive }, r
         playsInline
         muted
         autoPlay
-        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${
-          cameraActive ? 'opacity-95' : 'opacity-0'
-        } webcam-glow-filter`}
+        className={`absolute inset-0 w-full h-full object-cover transition-all duration-700 webcam-glow-filter ${
+          cameraActive ? 'opacity-90' : 'opacity-0'
+        }`}
         style={{ transform: 'scaleX(-1)' }}
       />
 

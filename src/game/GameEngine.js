@@ -1,6 +1,7 @@
 // GameEngine: Progressive Waves, line-segment slicing physics, paparazzi triggers, and Grand Finale Boss
+// Cyberpunk Data Decryption Engine (Beat Saber Style)
 
-import { GameObject, GiantBirthdayBoss } from './GameObjects';
+import { GameObject, GiantMainframeCore } from './GameObjects';
 import { soundEngine } from '../audio/SoundEngine';
 import { LOVE_CONFIG } from '../config/loveConfig';
 
@@ -16,7 +17,8 @@ export class GameEngine {
     onFinaleComplete,
     onWaveChange,
     onPaparazziCapture,
-    onTimeUpdate
+    onTimeUpdate,
+    onGlitchTrigger
   }) {
     this.vfx = vfx;
     this.onScoreChange = onScoreChange || (() => {});
@@ -29,10 +31,11 @@ export class GameEngine {
     this.onWaveChange = onWaveChange || (() => {});
     this.onPaparazziCapture = onPaparazziCapture || (() => {});
     this.onTimeUpdate = onTimeUpdate || (() => {});
+    this.onGlitchTrigger = onGlitchTrigger || (() => {});
 
     this.objects = [];
     this.slicedHalves = [];
-    this.score = 0;
+    this.score = 0; // Decrypted data in KB
     this.lives = LOVE_CONFIG.initialLives;
     this.combo = 0;
     this.comboTimer = 0;
@@ -40,16 +43,17 @@ export class GameEngine {
     this.spawnTimer = 0;
     this.nextSpawnInterval = 1.3;
 
-    // Progressive Waves (1: 0-40s, 2: 40-80s, 3: 80-120s)
+    // Progressive Rounds (1: 0-20s, 2: 20-40s, 3: 40-60s)
     this.currentWave = 1;
     this.lastWave = 0;
-    this.frenzyTriggered50 = false;
-    this.frenzyTriggered70 = false;
+    this.frenzyTriggered24 = false;
+    this.frenzyTriggered34 = false;
+    this.isFinaleTriggered = false;
 
     // Paparazzi Fallback Timer
     this.paparazziTimer = 0;
 
-    // Boss Phase
+    // Boss Phase (Mainframe Core)
     this.isBossPhase = false;
     this.boss = null;
     this.isGameOver = false;
@@ -64,8 +68,20 @@ export class GameEngine {
     this.prevY = null;
     this.prevBladePos = null;
 
+    // Game state: starts false until unlocked by Biometric Scanner
+    this.isGameStarted = false;
+
     // Index rotation
     this.toastIndex = 0;
+  }
+
+  startGame() {
+    this.isGameStarted = true;
+    this.gameTime = 0;
+    this.spawnTimer = 0;
+    this.isFinaleTriggered = false;
+    this.onWaveChange(1, "ROUND 1: PEMANASAN 🎮");
+    this.onTimeUpdate(LOVE_CONFIG.gameDurationSeconds);
   }
 
   setDimensions(w, h) {
@@ -78,6 +94,7 @@ export class GameEngine {
   }
 
   resetGame() {
+    this.isGameStarted = true;
     this.objects = [];
     this.slicedHalves = [];
     this.score = 0;
@@ -88,8 +105,9 @@ export class GameEngine {
     this.spawnTimer = 0;
     this.currentWave = 1;
     this.lastWave = 0;
-    this.frenzyTriggered50 = false;
-    this.frenzyTriggered70 = false;
+    this.frenzyTriggered24 = false;
+    this.frenzyTriggered34 = false;
+    this.isFinaleTriggered = false;
     this.paparazziTimer = 0;
     this.isBossPhase = false;
     this.boss = null;
@@ -102,7 +120,7 @@ export class GameEngine {
     this.onScoreChange(this.score);
     this.onLivesChange(this.lives);
     this.onComboChange(0);
-    this.onWaveChange(1, "Wave 1: Pemanasan 🎮");
+    this.onWaveChange(1, "ROUND 1: PEMANASAN 🎮");
     this.onTimeUpdate(LOVE_CONFIG.gameDurationSeconds);
   }
 
@@ -133,7 +151,7 @@ export class GameEngine {
   checkSlices(p1, p2) {
     const cutAngle = Math.atan2(p2.y - p1.y, p2.x - p1.x);
 
-    // 1. Boss Phase Slicing (1.5x hitbox padding, 30 slashes required)
+    // 1. Boss Phase Slicing (Giant Mainframe Core - 30 slashes required)
     if (this.isBossPhase && this.boss && !this.boss.isDefeated) {
       const bossHitDist = this.distToSegment(this.boss.x, this.boss.y, p1, p2);
       const bossPaddedRadius = this.boss.baseRadius * 1.5; // 1.5x hitbox
@@ -142,36 +160,37 @@ export class GameEngine {
         const midX = (p1.x + p2.x) / 2;
         const midY = (p1.y + p2.y) / 2;
 
-        this.vfx.spawnShockwave(midX, midY, 140, 'rgba(0, 242, 254, 0.95)');
-        this.vfx.spawnSlashFlash(midX, midY, cutAngle, 190);
+        this.vfx.spawnShockwave(midX, midY, 150, 'rgba(0, 242, 254, 0.95)');
+        this.vfx.spawnSlashFlash(midX, midY, cutAngle, 210);
         this.vfx.spawnStarBurst(midX, midY);
-        this.vfx.triggerScreenShake(8, 150);
+        this.vfx.triggerScreenShake(8, 160);
 
-        soundEngine.playBossSlash(this.boss.slashesDone);
+        soundEngine.playVaultSlash(this.boss.slashesDone);
 
         // Paparazzi snapshot at exciting boss fight moments
-        if (this.boss.slashesDone === 8 || this.boss.slashesDone === 18 || this.boss.slashesDone === 28) {
+        if (this.boss.slashesDone === 5 || this.boss.slashesDone === 12 || this.boss.slashesDone === 18) {
           this.onPaparazziCapture('boss');
         }
 
         if (defeated) {
-          // Final 30th slash explosion!
-          this.vfx.triggerHitStop(140);
-          this.vfx.triggerScreenShake(26, 700);
+          // Final 20th slash breach!
+          this.isFinaleTriggered = true;
+          this.vfx.triggerHitStop(150);
+          this.vfx.triggerScreenShake(26, 750);
           this.vfx.spawnConfettiBurst(this.boss.x, this.boss.y, 'gold');
           this.vfx.spawnConfettiBurst(this.boss.x, this.boss.y, 'cyan-gold');
           this.vfx.spawnStarBurst(this.boss.x, this.boss.y);
-          this.vfx.spawnShockwave(this.boss.x, this.boss.y, 300, 'rgba(0, 242, 254, 0.95)');
+          this.vfx.spawnShockwave(this.boss.x, this.boss.y, 320, 'rgba(0, 242, 254, 0.98)');
 
-          soundEngine.playBossExplosion();
+          soundEngine.playVaultBreached();
 
           // Capture victory moment snapshot
           this.onPaparazziCapture('boss');
 
-          // Transition to Scrapbook modal after fireworks
+          // Transition to victory modal after fireworks
           setTimeout(() => {
             this.onFinaleComplete();
-          }, 1500);
+          }, 1200);
         }
         return;
       }
@@ -183,14 +202,14 @@ export class GameEngine {
       if (obj.isSliced) continue;
 
       const d = this.distToSegment(obj.x, obj.y, p1, p2);
-      const paddedRadius = obj.radius * 1.5; // 1.5x visual size hitbox!
+      const paddedRadius = obj.radius * 1.5; // 1.5x visual size hitbox
       if (d <= paddedRadius) {
         this.sliceObject(obj, cutAngle, p1, p2);
       }
     }
   }
 
-  // Slice an individual object with all juice effects
+  // Slice an individual object with all cyber juice effects
   sliceObject(obj, cutAngle, p1, p2) {
     obj.isSliced = true;
 
@@ -202,58 +221,52 @@ export class GameEngine {
     this.slicedHalves.push(...halves);
 
     // 2. Shockwave ring & sharp directional slash line flash (Neon Cyan & Gold)
-    this.vfx.spawnShockwave(hitX, hitY, 110, 'rgba(0, 242, 254, 0.95)');
-    this.vfx.spawnSlashFlash(hitX, hitY, cutAngle, 140);
+    this.vfx.spawnShockwave(hitX, hitY, 115, 'rgba(0, 242, 254, 0.95)');
+    this.vfx.spawnSlashFlash(hitX, hitY, cutAngle, 150);
 
-    // 3. Handle object specific reaction
-    if (obj.type === 'balloon') {
-      // Confetti burst (Electric Cyan & Gold)
+    // 3. Handle object specific reaction (Pure visual sparks & audio, zero text popups)
+    if (obj.type === 'loot_box' || obj.type === 'cube' || obj.type === 'balloon') {
+      // Tech Crate / Loot Box: Neon particles + Cyber slash sound
       this.vfx.spawnConfettiBurst(hitX, hitY, 'cyan-gold');
-      soundEngine.playBalloonPop();
+      soundEngine.playCyberSlash();
 
-      // Score +100
-      this.addScore(100, hitX, hitY, '#00f2fe');
-
+      // +100 Points
+      this.addScore(100);
       this.registerComboHit();
 
-    } else if (obj.type === 'gift') {
-      // Star burst + Hit-stop
+    } else if (obj.type === 'holo_star' || obj.type === 'gold_cube' || obj.type === 'gift') {
+      // Holographic Star: Star burst + Hit-stop
       this.vfx.spawnStarBurst(hitX, hitY);
       this.vfx.triggerHitStop(45);
-      soundEngine.playGiftSlice();
+      soundEngine.playDataDecrypt();
 
-      // Score +150
-      this.addScore(150, hitX, hitY, '#fbbf24');
-
-      // Sweet Indonesian Toast Message
-      const msg = LOVE_CONFIG.sweetMessages[this.toastIndex % LOVE_CONFIG.sweetMessages.length];
-      this.toastIndex++;
-      this.onToast(msg);
-
+      // +150 Points
+      this.addScore(150);
       this.registerComboHit();
 
-    } else if (obj.type === 'heart') {
-      // Heart slice
+    } else if (obj.type === 'shield_node' || obj.type === 'heart') {
+      // Shield Node: Restore 1 Shield
       this.vfx.spawnStarBurst(hitX, hitY);
-      for (let k = 0; k < 6; k++) {
-        this.vfx.spawnMicroHeart(hitX, hitY);
-      }
-      soundEngine.playHeartSlice();
+      soundEngine.playShieldRecharge();
 
       if (this.lives < 3) {
         this.lives++;
         this.onLivesChange(this.lives);
       }
-      this.addScore(200, hitX, hitY, '#38bdf8');
+      this.addScore(200);
       this.registerComboHit();
 
-    } else if (obj.type === 'bomb') {
-      // Clean 3D Bomb hit
+    } else if (obj.type === 'danger_mine' || obj.type === 'glitch_virus' || obj.type === 'bomb') {
+      // Red Danger Mine: Screen shake & blast
       this.vfx.spawnSmokeBurst(hitX, hitY);
-      this.vfx.triggerScreenShake(18, 320);
-      soundEngine.playBombThud();
+      this.vfx.triggerScreenShake(22, 380);
+      soundEngine.playGlitchCorruption();
 
-      // Paparazzi snapshot on bomb hit! (Shocked/annoyed face)
+      if (this.onGlitchTrigger) {
+        this.onGlitchTrigger();
+      }
+
+      // Paparazzi snapshot on mine hit!
       this.onPaparazziCapture('bomb');
 
       this.combo = 0;
@@ -263,7 +276,7 @@ export class GameEngine {
       this.lives--;
       this.onLivesChange(this.lives);
 
-      // Infinite Love Revive check
+      // Emergency Revive check
       if (this.lives <= 0) {
         this.triggerInfiniteLoveRevive();
       }
@@ -285,7 +298,6 @@ export class GameEngine {
       const bonus = this.combo * 50;
       this.score += bonus;
       this.onScoreChange(this.score);
-      this.vfx.spawnScorePopup(this.width / 2, 140, `COMBO x${this.combo}! +${bonus}`, '#fbbf24', true);
 
       // Paparazzi snapshot on high-focus combo!
       if (this.combo === 3 || this.combo === 6) {
@@ -294,27 +306,26 @@ export class GameEngine {
     }
   }
 
-  // Add score with floating popup
-  addScore(amount, x, y, color = '#00f2fe') {
+  // Add score silently to HUD odometer (Zero text pop-ups on screen)
+  addScore(amount) {
     this.score += amount;
     this.onScoreChange(this.score);
-    this.vfx.spawnScorePopup(x, y, `+${amount}`, color);
 
-    // Check boss trigger: either 120s duration reached OR 5000 score reached in Wave 3 (>=90s)
-    if (!this.isBossPhase && ((this.score >= LOVE_CONFIG.targetScore && this.gameTime >= 90) || this.gameTime >= LOVE_CONFIG.gameDurationSeconds)) {
+    // Check boss trigger: either 40s duration reached OR targetScore reached at >=32s
+    if (!this.isBossPhase && ((this.score >= LOVE_CONFIG.targetScore && this.gameTime >= 32) || this.gameTime >= 40)) {
       this.startBossPhase();
     }
   }
 
-  // Infinite Love Revive: cinta kita nggak kenal game over
+  // Emergency Revive: cinta kita nggak kenal game over
   triggerInfiniteLoveRevive() {
     if (this.isReviving) return;
     this.isReviving = true;
 
-    this.onToast("Cinta kita nggak kenal Game Over ❤️");
+    this.onToast("Cinta kita nggak kenal Game Over ❤️ Revive Aktif!");
     soundEngine.playReviveSound();
     this.vfx.spawnConfettiBurst(this.width / 2, this.height / 2, 'cyan-gold');
-    this.vfx.triggerScreenShake(10, 200);
+    this.vfx.triggerScreenShake(12, 240);
 
     setTimeout(() => {
       this.lives = LOVE_CONFIG.initialLives;
@@ -323,32 +334,33 @@ export class GameEngine {
     }, 600);
   }
 
-  // Start Grand Finale Boss Encounter (30 Slashes required)
+  // Start Grand Finale Boss Encounter: Giant Golden Loot Core / Vault (20 Slashes required)
   startBossPhase() {
     if (this.isBossPhase) return;
     this.isBossPhase = true;
     this.objects = []; // Clear regular obstacles
-    this.boss = new GiantBirthdayBoss({
-      targetSlashes: 30,
+    this.boss = new GiantMainframeCore({
+      targetSlashes: 20,
       centerX: this.width / 2,
       centerY: this.height / 2 - 20
     });
     this.onBossStart();
-    this.onToast("🎂 BOSS ULTAH: Sabet 30x beruntun! ✨");
-    soundEngine.playGiftSlice();
+    this.onWaveChange(3, "FINAL ROUND: BOSS FIGHT ⚡");
+    this.onToast("💥 BOSS FIGHT: Sabet 20x Beruntun Untuk Menang! 💥");
+    soundEngine.playVaultSlash(1);
   }
 
-  // Trigger Frenzy Burst in Wave 2 (8-10 gifts & balloons simultaneously!)
+  // Trigger Frenzy Burst in Wave 2 (8-10 items launched simultaneously!)
   triggerFrenzyBurst() {
     if (this.isBossPhase) return;
 
-    this.onToast("🔥 FRENZY BURST! Sabet Semuanya! 🔥");
+    this.onToast("🔥 FRENZY RUSH: Sabet Semua Loot Box! 🔥");
     soundEngine.playComboSlice(4);
     this.vfx.triggerScreenShake(6, 250);
 
     const burstCount = Math.floor(Math.random() * 3) + 8; // 8 to 10 items
     for (let i = 0; i < burstCount; i++) {
-      const type = Math.random() < 0.65 ? 'balloon' : 'gift';
+      const type = Math.random() < 0.7 ? 'loot_box' : 'holo_star';
       const spawnX = (this.width / (burstCount + 1)) * (i + 1) + (Math.random() - 0.5) * 40;
       const spawnY = this.height + 60;
       const targetMidX = this.width / 2 + (Math.random() - 0.5) * 200;
@@ -362,8 +374,8 @@ export class GameEngine {
         y: spawnY,
         vx,
         vy,
-        radius: type === 'gift' ? 44 : 46,
-        label: '' // Clean, zero text on objects
+        radius: type === 'gold_cube' ? 44 : 46,
+        label: ''
       });
       this.objects.push(obj);
     }
@@ -371,12 +383,13 @@ export class GameEngine {
 
   // Main game update loop
   update(rawDt) {
+    if (!this.isGameStarted) return;
     const dt = rawDt * this.vfx.timeScale;
     this.gameTime += dt;
 
-    // Periodic Fallback Paparazzi Snapshot (every 22 seconds)
+    // Periodic Fallback Paparazzi Snapshot (every 18 seconds for 60s game)
     this.paparazziTimer += dt;
-    if (this.paparazziTimer >= 22) {
+    if (this.paparazziTimer >= 18) {
       this.paparazziTimer = 0;
       this.onPaparazziCapture('timer');
     }
@@ -384,6 +397,22 @@ export class GameEngine {
     // Time update to HUD
     const timeLeft = Math.max(0, Math.ceil(LOVE_CONFIG.gameDurationSeconds - this.gameTime));
     this.onTimeUpdate(timeLeft);
+
+    // Exact 60-Second Completion: Trigger Finale Modal precisely when 60s is reached
+    if (this.gameTime >= LOVE_CONFIG.gameDurationSeconds) {
+      if (!this.isFinaleTriggered) {
+        this.isFinaleTriggered = true;
+        this.vfx.triggerHitStop(120);
+        this.vfx.triggerScreenShake(20, 600);
+        this.vfx.spawnConfettiBurst(this.width / 2, this.height / 2, 'gold');
+        soundEngine.playVaultBreached();
+        this.onPaparazziCapture('boss');
+        setTimeout(() => {
+          this.onFinaleComplete();
+        }, 800);
+      }
+      return;
+    }
 
     // Combo timer decay
     if (this.comboTimer > 0) {
@@ -398,39 +427,34 @@ export class GameEngine {
     if (this.isBossPhase && this.boss) {
       this.boss.update(dt);
     } else {
-      // Progressive Wave Management
-      // Wave 1: 0 - 40s (Warming up)
-      // Wave 2: 40 - 80s (Frenzy bursts)
-      // Wave 3: 80 - 120s (High-speed spawns)
-      if (this.gameTime < 40) {
+      // Progressive Round Management (1-Minute Session: 0-20s Round 1, 20-40s Round 2 Frenzy, 40-60s Boss)
+      if (this.gameTime < 20) {
         this.currentWave = 1;
         if (this.lastWave !== 1) {
           this.lastWave = 1;
-          this.onWaveChange(1, "Wave 1: Pemanasan 🎮");
+          this.onWaveChange(1, "ROUND 1: PEMANASAN 🎮");
         }
-      } else if (this.gameTime < 80) {
+      } else if (this.gameTime < 40) {
         this.currentWave = 2;
         if (this.lastWave !== 2) {
           this.lastWave = 2;
-          this.onWaveChange(2, "Wave 2: Frenzy Rush 🔥");
-          this.onToast("⚡ WAVE 2: Kecepatan Bertambah! ⚡");
+          this.onWaveChange(2, "ROUND 2: FRENZY RUSH 🔥");
+          this.onToast("🔥 ROUND 2: Frenzy Rush Dimulai! 🔥");
         }
 
-        // Trigger Wave 2 Frenzy Bursts at 52s and 70s
-        if (this.gameTime >= 50 && !this.frenzyTriggered50) {
-          this.frenzyTriggered50 = true;
+        // Trigger Wave 2 Frenzy Bursts at 24s and 34s
+        if (this.gameTime >= 24 && !this.frenzyTriggered24) {
+          this.frenzyTriggered24 = true;
           this.triggerFrenzyBurst();
         }
-        if (this.gameTime >= 70 && !this.frenzyTriggered70) {
-          this.frenzyTriggered70 = true;
+        if (this.gameTime >= 34 && !this.frenzyTriggered34) {
+          this.frenzyTriggered34 = true;
           this.triggerFrenzyBurst();
         }
       } else {
-        this.currentWave = 3;
-        if (this.lastWave !== 3) {
-          this.lastWave = 3;
-          this.onWaveChange(3, "Wave 3: Final Rush ⚡");
-          this.onToast("🔥 WAVE 3: Bersiap Menuju Boss! 🔥");
+        // 40s - 60s: Boss Mode
+        if (!this.isBossPhase) {
+          this.startBossPhase();
         }
       }
 
@@ -439,18 +463,11 @@ export class GameEngine {
       if (this.spawnTimer >= this.nextSpawnInterval) {
         this.spawnTimer = 0;
         if (this.currentWave === 1) {
-          this.nextSpawnInterval = Math.random() * 0.4 + 1.2; // 1.2s - 1.6s
-        } else if (this.currentWave === 2) {
-          this.nextSpawnInterval = Math.random() * 0.3 + 0.8; // 0.8s - 1.1s
+          this.nextSpawnInterval = Math.random() * 0.3 + 1.0;
         } else {
-          this.nextSpawnInterval = Math.random() * 0.25 + 0.55; // 0.55s - 0.8s
+          this.nextSpawnInterval = Math.random() * 0.25 + 0.65;
         }
         this.spawnWave();
-      }
-
-      // Check auto boss trigger after gameDurationSeconds (120s) or score >= 5000 in Wave 3
-      if (!this.isBossPhase && (this.gameTime >= LOVE_CONFIG.gameDurationSeconds || (this.score >= LOVE_CONFIG.targetScore && this.gameTime >= 90))) {
-        this.startBossPhase();
       }
     }
 
@@ -458,7 +475,6 @@ export class GameEngine {
     for (let i = this.objects.length - 1; i >= 0; i--) {
       const obj = this.objects[i];
       obj.update(dt);
-      // Remove if dropped below screen
       if (obj.y > this.height + 150) {
         this.objects.splice(i, 1);
       }
@@ -474,7 +490,7 @@ export class GameEngine {
     }
   }
 
-  // Spawn wave of items tailored to current wave
+  // Spawn wave of items tailored to current round
   spawnWave() {
     if (this.isBossPhase) return;
 
@@ -490,21 +506,20 @@ export class GameEngine {
 
     for (let i = 0; i < count; i++) {
       const roll = Math.random();
-      let type = 'balloon';
+      let type = 'loot_box';
 
       if (roll < 0.52) {
-        type = 'balloon';
+        type = 'loot_box'; // Tech Crate / Loot Box
       } else if (roll < 0.78) {
-        type = 'gift';
+        type = 'holo_star'; // Holographic Star
       } else if (roll < 0.90) {
-        type = 'bomb'; // Clean 3D bomb, zero text
+        type = 'danger_mine'; // Red Danger Mine
       } else {
-        type = 'heart';
+        type = 'shield_node'; // Shield Node
       }
 
       const spawnX = Math.random() * (this.width - 240) + 120;
       const spawnY = this.height + 60;
-      // Parabolic upward arc with wave velocity scaling
       const speedMult = this.currentWave === 3 ? 1.15 : (this.currentWave === 2 ? 1.05 : 0.95);
       const targetMidX = this.width / 2 + (Math.random() - 0.5) * 320;
       const vx = (targetMidX - spawnX) * (Math.random() * 0.6 + 0.6) * speedMult;
@@ -517,8 +532,8 @@ export class GameEngine {
         y: spawnY,
         vx,
         vy,
-        radius: type === 'gift' ? 44 : (type === 'heart' ? 42 : 46),
-        label: '' // Completely clean: no text on bombs or objects
+        radius: type === 'holo_star' ? 44 : (type === 'shield_node' ? 42 : 46),
+        label: ''
       });
 
       this.objects.push(obj);
