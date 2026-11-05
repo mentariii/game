@@ -13,53 +13,52 @@ export const LOVE_CONFIG = {
     {
       id: 1,
       imageUrl: "https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&w=800&q=80",
-      caption: "Momen favorit kita jalan bareng di senja itu ✨",
-      date: "10 November"
+      caption: "✨",
+      date: ""
     },
     {
       id: 2,
       imageUrl: "https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?auto=format&fit=crop&w=800&q=80",
-      caption: "Tawa renyahmu yang selalu bikin hatiku teduh 🤍",
-      date: "Kencan Manis"
+      caption: " 🤍",
+      date: ""
     },
     {
       id: 3,
       imageUrl: "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=800&q=80",
-      caption: "Genggaman tangan hangat Mas Al yang selalu bikin nyaman 🌸",
+      caption: " 🌸",
       date: "Momen Favorit"
     },
     {
       id: 4,
       imageUrl: "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=800&q=80",
-      caption: "Menatap langit malam sambil mendengarkan ceritamu 💫",
-      date: "Bawah Bintang"
+      caption: " 💫",
+      date: ""
     },
     {
       id: 5,
       imageUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=800&q=80",
-      caption: "Gantengnya kamu selalu bikin hatiku meleleh setiap saat 🥰",
+      caption: " 🥰",
       date: "Potret Gantengku"
     },
     {
       id: 6,
       imageUrl: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&w=800&q=80",
-      caption: "Selamat ulang tahun untuk pria terhebat di semesta ini 🎂❤️",
-      date: "10 November Spesial"
+      caption: " 🎂❤️",
+      date: " Spesial"
     }
   ],
 
   // Sweet Indonesian gamer toast messages (tailored for Mas Al)
   sweetMessages: [
     "Level 21 Unlocked! Happy Birthday Mas Al ✨",
-    "Senyum manismu favoritku sepanjang masa 🤍",
-    "Semangat belajarnya biar cepet ke Jerman yaa 🇩🇪✨",
-    "Pria hebat kebanggaanku selamanya 💫",
+    
+   
     "Kesehatannya dijaga yaa sayangg 🌸",
     "Jangan suka emosi pas main game wkwk 🎮",
     "I love you to the moon and all the stars 🌙",
-    "Rumah ternyaman untuk hatiku bersandar 🌹",
-    "Sehat & sukses selalu pria gantengku 💖",
-    "Doa terbaikku memeluk setiap langkahmu 🎂"
+    
+    "Sehat & sukses selalu 💖",
+    
   ],
 
   // Obstacle labels (unused, clean mines)
@@ -70,13 +69,17 @@ export const LOVE_CONFIG = {
   // The Grand Birthday Victory Modal (Console Gamer E-Sports Style)
   letter: {
     modalMainTitle: "MISSION PASSED: LEVEL 21 🏆",
-    modalSubTitle: "Player: Mas Al | 10 November",
-    title: "Untuk Mas Al tersayang muah muah 💋",
+    modalSubTitle: "Player: Mas Al ",
+    title: "Untuk Mas Al cintaku muah muah 💋",
     greeting: "",
     paragraphs: [
-      "Happy birthday sayangg! Di umur 81 ini, aku doain semoga semua target kamu tercapai, terutama biar cepet berangkat ke Jerman semangat yaa belajarnyaa",
-      "Kesehatannya tolong dijaga ya, jangan sakit sakit terus kayak kemaren, sedih aku liatnya",
-      "Marah marahnya juga dikurangin. Jangan dikit-dikit emosi, apalagi pas main tuh masih suka marah marah wkwk",
+      "happy birthday sayangggg! Di umur 81 ini, aku doain yang terbaik buat kamu.",
+      "semoga semua impian kamu, target kamu, pokoknya semua yang kamu pengen bisa cepet tecapai yaa",
+      "Kesehatannya juga tolong dijaga, mana yang katanya mau olahraga tu ga ada ku liat liat ",
+      "pokoknya jangan sakit sakit terus kayak kemaren, sedih aku liatnya",
+      "pola makan pola tidur dibenerin juga, masih telat makan masi sering begadang terus bangun siang",
+      "marah marahnya juga dikurangin.",
+      "udah berkurang si sekarang kalo main ga se emosi dulu, tapi masi marah marah dikitt",
       "Pokoknya aku doain yang baik baik buat kamuu, love youuuu! ❤️"
     ],
     signOff: "", // Hapus selamanya mencintaimu

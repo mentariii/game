@@ -233,7 +233,7 @@ export const BirthdayLetterModal = ({ isOpen, onPlayAgain, candidPhotos = [] }) 
               <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-cyan-500/30 text-left flex items-center justify-between text-xs sm:text-sm">
                 <div className="flex items-center gap-2 text-cyan-200 font-bold">
                   <Camera className="w-4 h-4 text-amber-300" />
-                  <span>Momen Candid Mas Al Saat Main Game 📸</span>
+                  <span>cekrek 📸</span>
                 </div>
                 <span className="text-amber-300 font-bold text-xs">
                   {displayPhotos.length} Foto Terkumpul
@@ -263,12 +263,7 @@ export const BirthdayLetterModal = ({ isOpen, onPlayAgain, candidPhotos = [] }) 
                         </div>
                       </div>
 
-                      {/* Caption */}
-                      <div className="mt-3 px-1 text-left">
-                        <p className="text-xs text-slate-200 leading-snug line-clamp-2 font-sans font-medium">
-                          "{photo.caption}"
-                        </p>
-                      </div>
+                      
                     </div>
 
                     {/* Download Button */}
@@ -320,7 +315,7 @@ export const BirthdayLetterModal = ({ isOpen, onPlayAgain, candidPhotos = [] }) 
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between pb-2 mb-3 border-b border-cyan-500/30 text-xs text-cyan-300 font-bold">
-              <span>FOTO CANDID MAS AL 📸</span>
+              <span>FOTO CANDID📸</span>
               <button
                 onClick={() => setSelectedPhoto(null)}
                 className="p-1 rounded-lg hover:bg-white/10 text-slate-300 hover:text-white"
@@ -332,14 +327,14 @@ export const BirthdayLetterModal = ({ isOpen, onPlayAgain, candidPhotos = [] }) 
             <div className="w-full h-80 rounded-2xl bg-black relative overflow-hidden border border-cyan-500/40">
               <img
                 src={selectedPhoto.imageUrl}
-                alt={selectedPhoto.caption}
+               
                 className="w-full h-full object-cover filter contrast-105"
               />
             </div>
 
             <div className="mt-4 text-left space-y-3 font-sans">
               <p className="text-xs sm:text-sm text-slate-200 font-medium">
-                "{selectedPhoto.caption}"
+               
               </p>
               
               <div className="flex items-center justify-end gap-3 pt-2 border-t border-cyan-500/20 font-gamer">
@@ -349,7 +344,7 @@ export const BirthdayLetterModal = ({ isOpen, onPlayAgain, candidPhotos = [] }) 
                   className="px-4 py-2 rounded-xl text-xs font-bold bg-cyan-950/80 hover:bg-cyan-500/20 border border-cyan-400 text-cyan-200 hover:text-white transition flex items-center gap-1.5"
                 >
                   <Download className="w-3.5 h-3.5" />
-                  <span>Unduh Foto Penuh 📥</span>
+                  <span>Download 📥</span>
                 </a>
                 <button
                   onClick={() => setSelectedPhoto(null)}

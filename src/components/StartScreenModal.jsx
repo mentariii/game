@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Heart, Camera, CheckCircle2, Gamepad2, Play, MousePointer, Sparkles, Trophy, Zap } from 'lucide-react';
+import { Heart, HeartHandshake, Camera, CheckCircle2, Gamepad2, Play, MousePointer, Sparkles, Trophy, Zap } from 'lucide-react';
 import { soundEngine } from '../audio/SoundEngine';
 
 export const StartScreenModal = ({
@@ -122,7 +122,7 @@ export const StartScreenModal = ({
           </div>
 
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-wide uppercase text-white drop-shadow-[0_0_15px_rgba(0,242,254,0.6)]">
-            HAPPY BIRTHDAY, <span className="text-cyan-400">MAS AL!</span>
+            HAPPY BIRTHDAY, <span className="text-cyan-400">SAYANG</span>
           </h1>
         </div>
 
@@ -135,11 +135,9 @@ export const StartScreenModal = ({
           </div>
 
           <p className="text-sm sm:text-base font-semibold text-white leading-relaxed">
-            MISSION: Tunjukkan pose 'Love' <span className="text-xl">🫶</span> ke kamera untuk memulai game!
+            MISSION: Tunjukkan pose 'Love' ke kamera untuk memulai game!
           </p>
-          <p className="text-xs text-cyan-300/80 font-normal">
-            (Bisa 2 tangan 🫶 atau 1 tangan finger heart 🫰)
-          </p>
+        
         </div>
 
         {/* Central Biometric Heart Gesture Scanner Ring */}
@@ -227,11 +225,11 @@ export const StartScreenModal = ({
               </span>
             ) : gestureState?.handsCount >= 2 ? (
               <span className="px-4 py-1.5 rounded-full bg-amber-500/20 border border-amber-400/80 text-amber-300 font-semibold tracking-wider">
-                🙌 2 Tangan Terlihat: Bentuk pose love (🫶)
+                🙌 2 Tangan Terlihat: Bentuk pose love 
               </span>
             ) : gestureState?.handsCount === 1 ? (
               <span className="px-4 py-1.5 rounded-full bg-cyan-500/20 border border-cyan-400/80 text-cyan-200 font-semibold tracking-wider">
-                ✋ 1 Tangan Terlihat: Silangkan jempol & telunjuk (🫰) atau angkat 2 tangan (🫶)
+                ✋ 1 Tangan Terlihat: Silangkan jempol & telunjuk atau angkat 2 tangan
               </span>
             ) : (
               <span className="px-4 py-1.5 rounded-full bg-slate-800/80 border border-cyan-500/30 text-cyan-200/80 tracking-wider">
@@ -242,15 +240,7 @@ export const StartScreenModal = ({
         </div>
 
         {/* Center Glowing Action Button: [ TAP TO START LEVEL 21 ] */}
-        <div className="pt-1">
-          <button
-            onClick={onUnlock}
-            className="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-cyan-500 via-blue-600 to-cyan-500 hover:from-cyan-400 hover:to-blue-500 text-white font-extrabold text-sm sm:text-base tracking-widest uppercase shadow-[0_0_25px_rgba(0,242,254,0.5)] hover:shadow-[0_0_35px_rgba(0,242,254,0.8)] transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2.5 cursor-pointer"
-          >
-            <Play className="w-5 h-5 fill-white" />
-            <span>[ TAP TO START LEVEL 21 ]</span>
-          </button>
-        </div>
+      
 
         {/* Camera Activation or Troubleshooting Prompt */}
         {!cameraActive && (
@@ -275,13 +265,7 @@ export const StartScreenModal = ({
             💡 Tips: Pastikan ruangan cukup terang & tangan kelihatan jelas.
           </div>
 
-          <button
-            onClick={onStartWithMouse}
-            className="text-[11px] font-semibold text-cyan-300 hover:text-white flex items-center gap-1.5 transition underline underline-offset-4 cursor-pointer shrink-0"
-          >
-            <MousePointer className="w-3.5 h-3.5 text-cyan-400" />
-            <span>Mode Mouse / Touch</span>
-          </button>
+          
         </div>
 
       </div>

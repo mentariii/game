@@ -15,24 +15,16 @@ import StartScreenModal from './components/StartScreenModal';
 
 const PAPARAZZI_CAPTIONS = {
   bomb: [
-    "Muka panik kena Danger Mine 💥",
-    "Detik-detik syok kena bom jebakan wkwk ⚠️",
-    "Kaget banget yaa kena mine 😅"
+    
   ],
   combo: [
-    "Fokus banget nebas Loot Box 👀",
-    "Muka serius mode bantai combo 🔥",
-    "Tatapan tajam sang pro gamer ⚔️"
+    
   ],
   boss: [
-    "Mode bantai Boss Vault Core 🔥",
-    "Ekspresi sabetan maut 30 combo ⚡",
-    "Ngebut nebas brankas rahasia Mas Al 🏆"
+   
   ],
   timer: [
-    "Serius amat bos 🎮",
-    "Lagi asyik-asyiknya main game ✨",
-    "Gantengnya Mas Al pas fokus nebas 🥰"
+    
   ]
 };
 

@@ -322,7 +322,7 @@ export class GameEngine {
     if (this.isReviving) return;
     this.isReviving = true;
 
-    this.onToast("Cinta kita nggak kenal Game Over ❤️ Revive Aktif!");
+    this.onToast("Revive Aktif!");
     soundEngine.playReviveSound();
     this.vfx.spawnConfettiBurst(this.width / 2, this.height / 2, 'cyan-gold');
     this.vfx.triggerScreenShake(12, 240);
