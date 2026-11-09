@@ -10,7 +10,7 @@ export const CameraBackground = forwardRef(({ cameraActive, bombPulseActive, isS
         muted
         autoPlay
         className={`absolute inset-0 w-full h-full object-cover transition-all duration-700 webcam-glow-filter ${
-          cameraActive ? 'opacity-90' : 'opacity-0'
+          cameraActive ? 'opacity-100' : 'opacity-0'
         }`}
         style={{ transform: 'scaleX(-1)' }}
       />

@@ -46,6 +46,19 @@ export const BirthdayLetterModal = ({ isOpen, onPlayAgain, candidPhotos = [] }) 
     frame();
   }, [isOpen]);
 
+  const stopVoiceNote = () => {
+    if (voiceAudioRef.current) {
+      voiceAudioRef.current.pause();
+      voiceAudioRef.current.currentTime = 0;
+    }
+    if (waveformAnimRef.current) {
+      clearTimeout(waveformAnimRef.current);
+    }
+    soundEngine.setBgmVolume(0.35);
+    setIsPlayingVoice(false);
+    setWaveHeights([25, 30, 25, 35, 30, 25, 35, 30, 25, 30, 25, 30]);
+  };
+
   // Voice Note Play / Pause & Waveform Animation
   const toggleVoiceNote = () => {
     soundEngine.init();
@@ -53,6 +66,7 @@ export const BirthdayLetterModal = ({ isOpen, onPlayAgain, candidPhotos = [] }) 
     setIsPlayingVoice(willPlay);
 
     if (willPlay) {
+      soundEngine.setBgmVolume(0.08); // Duck background music so Tata's voice is crystal clear
       if (LOVE_CONFIG.audio.voiceNoteUrl && voiceAudioRef.current) {
         voiceAudioRef.current.play().catch(e => console.log(e));
       } else {
@@ -67,6 +81,7 @@ export const BirthdayLetterModal = ({ isOpen, onPlayAgain, candidPhotos = [] }) 
       };
       animateWave();
     } else {
+      soundEngine.setBgmVolume(0.35);
       if (voiceAudioRef.current) {
         voiceAudioRef.current.pause();
       }
@@ -76,6 +91,12 @@ export const BirthdayLetterModal = ({ isOpen, onPlayAgain, candidPhotos = [] }) 
       setWaveHeights([25, 30, 25, 35, 30, 25, 35, 30, 25, 30, 25, 30]);
     }
   };
+
+  useEffect(() => {
+    return () => {
+      stopVoiceNote();
+    };
+  }, []);
 
   if (!isOpen) return null;
 
@@ -87,7 +108,13 @@ export const BirthdayLetterModal = ({ isOpen, onPlayAgain, candidPhotos = [] }) 
         <audio
           ref={voiceAudioRef}
           src={LOVE_CONFIG.audio.voiceNoteUrl}
-          onEnded={() => setIsPlayingVoice(false)}
+          preload="auto"
+          onEnded={() => {
+            setIsPlayingVoice(false);
+            soundEngine.setBgmVolume(0.35);
+            if (waveformAnimRef.current) clearTimeout(waveformAnimRef.current);
+            setWaveHeights([25, 30, 25, 35, 30, 25, 35, 30, 25, 30, 25, 30]);
+          }}
         />
       )}
 
@@ -100,18 +127,16 @@ export const BirthdayLetterModal = ({ isOpen, onPlayAgain, candidPhotos = [] }) 
         {/* 1. Victory Top Header Bar */}
         <div className="px-5 sm:px-8 py-4 border-b border-cyan-500/30 bg-[#080c14]/90 flex flex-wrap items-center justify-between gap-3 shrink-0 relative z-10">
           <div>
-            {/* Header Title: MISSION PASSED: LEVEL 21 🏆 */}
+            {/* Header Title: MISSION PASSED 🏆 */}
             <div className="text-xl sm:text-2xl md:text-3xl font-black tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-yellow-200 to-amber-400 flex items-center gap-2 drop-shadow-[0_0_15px_rgba(251,191,36,0.6)]">
               <Trophy className="w-6 h-6 text-amber-300 animate-bounce shrink-0" />
-              <span>MISSION PASSED: LEVEL 21 🏆</span>
+              <span>MISSION PASSED 🏆</span>
             </div>
             {/* Header Subtitle: Player: Mas Al | 10 November */}
             <div className="text-xs sm:text-sm text-cyan-300 font-semibold tracking-wider mt-0.5 flex items-center gap-2">
               <span>Player: <strong className="text-white">Mas Al</strong></span>
               <span className="text-cyan-500">•</span>
               <span>10 November</span>
-              <span className="text-cyan-500">•</span>
-              <span className="text-emerald-400 font-bold">VICTORY UNLOCKED</span>
             </div>
           </div>
 
@@ -157,7 +182,6 @@ export const BirthdayLetterModal = ({ isOpen, onPlayAgain, candidPhotos = [] }) 
                   </div>
                   <div className="text-left">
                     <div className="text-sm font-bold text-white">Pesan Suara Dari Tata 🎙️</div>
-                    <div className="text-xs text-cyan-300/80">Dengarkan pesan spesial untukmu di hari ulang tahun ini</div>
                   </div>
                 </div>
 
@@ -294,7 +318,10 @@ export const BirthdayLetterModal = ({ isOpen, onPlayAgain, candidPhotos = [] }) 
 
           {/* Restart Button: Main Lagi 🎮 */}
           <button
-            onClick={onPlayAgain}
+            onClick={() => {
+              stopVoiceNote();
+              onPlayAgain();
+            }}
             className="w-full sm:w-auto px-7 py-3 rounded-2xl bg-gradient-to-r from-cyan-500 via-blue-600 to-cyan-500 hover:from-cyan-400 hover:to-blue-500 text-white font-black text-sm sm:text-base tracking-widest uppercase transition-all duration-200 shadow-[0_0_25px_rgba(0,242,254,0.5)] hover:shadow-[0_0_35px_rgba(0,242,254,0.8)] active:scale-95 cursor-pointer flex items-center justify-center gap-2 ml-auto"
           >
             <RotateCcw className="w-4 h-4" />

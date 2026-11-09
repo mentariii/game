@@ -46,7 +46,7 @@ export function App() {
   const [cameraStatus, setCameraStatus] = useState('idle');
   const [bombPulseActive, setBombPulseActive] = useState(false);
 
-  // Biometric Gesture State (🫶 Two-Handed Heart or 🫰 Finger Heart)
+  // Biometric Gesture State (Two-Handed Heart or Finger Heart)
   const [gestureState, setGestureState] = useState({ isHeart: false, type: null, handsCount: 0 });
 
   // Progressive Waves & Timer State
@@ -275,7 +275,6 @@ export function App() {
     setIsStartModalOpen(false);
     soundEngine.init();
     soundEngine.startAmbientBgm(LOVE_CONFIG.audio.customBgmUrl);
-    showToast("Level 21 Unlocked! Selamat Datang, Mas Al 🎮");
     gameRef.current?.startGame();
   };
 

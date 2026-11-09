@@ -495,6 +495,17 @@ class SoundEngine {
     }
   }
 
+  setBgmVolume(volume = 0.35) {
+    if (this.bgmGain && this.ctx) {
+      try {
+        this.bgmGain.gain.setValueAtTime(Math.max(0, Math.min(volume, 1.0)), this.ctx.currentTime);
+      } catch (e) {}
+    }
+    if (this.customBgmAudio) {
+      this.customBgmAudio.volume = Math.max(0, Math.min(volume, 1.0));
+    }
+  }
+
   // Scanner Beep when gesture is holding (pitches up from 480Hz to 960Hz)
   playScanBeep(progress = 0) {
     if (!this.ctx || this.isMuted) return;

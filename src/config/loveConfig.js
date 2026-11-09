@@ -50,7 +50,7 @@ export const LOVE_CONFIG = {
 
   // Sweet Indonesian gamer toast messages (tailored for Mas Al)
   sweetMessages: [
-    "Level 21 Unlocked! Happy Birthday Mas Al ✨",
+    "Happy Birthday Mas Al ✨",
     
    
     "Kesehatannya dijaga yaa sayangg 🌸",
@@ -68,7 +68,7 @@ export const LOVE_CONFIG = {
 
   // The Grand Birthday Victory Modal (Console Gamer E-Sports Style)
   letter: {
-    modalMainTitle: "MISSION PASSED: LEVEL 21 🏆",
+    modalMainTitle: "MISSION PASSED 🏆",
     modalSubTitle: "Player: Mas Al ",
     title: "Untuk Mas Al cintaku muah muah 💋",
     greeting: "",
@@ -89,7 +89,7 @@ export const LOVE_CONFIG = {
   // Audio configuration
   audio: {
     customBgmUrl: "",
-    voiceNoteUrl: "",
+    voiceNoteUrl: "/voice_note_tata.mp3",
     enableProceduralAudio: true,
     bgmVolume: 0.35,
     sfxVolume: 0.7
